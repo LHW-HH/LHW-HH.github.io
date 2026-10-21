@@ -1,21 +1,74 @@
 # 站点基本配置
-baseURL = 'https://lhw-hh.github.io/'   # GitHub Pages 正式地址
+baseURL = 'https://lhw-hh.github.io/'
 languageCode = 'zh-cn'
 defaultContentLanguage = 'zh-cn'
-title = 'LHW 的个人博客'                # 站点标题，随便改
-theme = 'Stack'                         # 使用 themes/Stack 主题
+title = 'LHW 的个人博客'
+theme = 'Stack'
 
 [pagination]
-pagerSize = 10                          # 每页文章数
+pagerSize = 10
 
 [params]
-mainSections = ['post']                 # 首页展示的文章分区
-description = '记录与总结'              # 站点描述
+mainSections = ['post']
+description = '记录与总结'
 
 [params.author]
-name = 'LHW'                            # 你的名字，改这里
+name = 'LHW'
 
-# 分类：文章会按标签/分类归档
+# 侧边栏：头像 + 一句话介绍
+[params.sidebar]
+compact = false
+avatar = 'img/avatar.svg'
+subtitle = '一些记录，一些总结'
+
+# 顶部菜单：归档 / 搜索
+[[menu.main]]
+identifier = 'archives'
+name = '归档'
+pageRef = '/archives'
+pre = 'archives'
+weight = 1
+
+[[menu.main]]
+identifier = 'search'
+name = '搜索'
+pageRef = '/search'
+pre = 'search'
+weight = 2
+
+# 侧边栏社交链接
+[[menu.social]]
+identifier = 'github'
+name = 'GitHub'
+url = 'https://github.com/LHW-HH'
+pre = 'brand-github'
+weight = 1
+
+# 页面 URL 规则：让 content/page/search 生成 /search 而不是 /page/search
+[permalinks]
+page = '/:slug/'
+
+# 分类：文章按标签/分类归档
 [taxonomies]
 tag = 'tags'
 category = 'categories'
+
+# 评论：giscus（走 GitHub Discussions）
+[params.comments]
+enabled = true
+provider = 'giscus'
+
+[params.comments.giscus]
+repo = 'LHW-HH/LHW-HH.github.io'
+repoID = 'R_kgDOVSY4yw'
+category = 'General'
+categoryID = 'DIC_kwDOVSY4y84DJRDf'
+mapping = 'pathname'
+strict = 0
+reactionsEnabled = 1
+emitMetadata = 0
+inputPosition = 'top'
+lightTheme = 'light'
+darkTheme = 'dark_dimmed'
+lang = 'zh-CN'
+loading = 'lazy'

@@ -19,3 +19,47 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 {{ end }}
+
+{{/* ============ 流彩极光背景（局部不影响正文阅读，支持暗色模式） ============ */}}
+<style>
+  html{background-color:var(--body-background)}
+  body{background-color:transparent !important}
+
+  body::before, body::after{
+    content:""; position:fixed; z-index:-2; width:70vmax; height:70vmax;
+    border-radius:50%; pointer-events:none; will-change:transform,filter;
+  }
+  /* 左上：蓝→紫团 */
+  body::before{
+    top:-28vmax; left:-22vmax; opacity:.5;
+    background:
+      radial-gradient(closest-side at 32% 32%, rgba(110,168,255,.38), transparent 72%),
+      radial-gradient(closest-side at 68% 66%, rgba(167,139,250,.32), transparent 70%);
+    animation:aurora-a 28s ease-in-out infinite alternate;
+  }
+  /* 右下：粉→青团 */
+  body::after{
+    bottom:-32vmax; right:-20vmax; opacity:.5;
+    background:
+      radial-gradient(closest-side at 42% 38%, rgba(255,178,204,.30), transparent 70%),
+      radial-gradient(closest-side at 70% 62%, rgba(126,224,204,.28), transparent 72%);
+    animation:aurora-b 34s ease-in-out infinite alternate;
+  }
+  :root[data-scheme="dark"] body::before,
+  :root[data-scheme="dark"] body::after{ opacity:.35 }
+
+  @keyframes aurora-a{
+    0%{ transform:translate(0,0) rotate(0deg) scale(1); filter:blur(70px) hue-rotate(0deg) }
+    50%{ transform:translate(9vmax,6vmax) rotate(12deg) scale(1.12); filter:blur(78px) hue-rotate(35deg) }
+    100%{ transform:translate(4vmax,12vmax) rotate(24deg) scale(1.05); filter:blur(70px) hue-rotate(70deg) }
+  }
+  @keyframes aurora-b{
+    0%{ transform:translate(0,0) rotate(0deg) scale(1.08); filter:blur(80px) hue-rotate(0deg) }
+    50%{ transform:translate(-8vmax,-7vmax) rotate(-10deg) scale(1); filter:blur(72px) hue-rotate(-30deg) }
+    100%{ transform:translate(-12vmax,-3vmax) rotate(-22deg) scale(1.15); filter:blur(80px) hue-rotate(-60deg) }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    body::before, body::after{ animation:none }
+  }
+</style>
