@@ -1,0 +1,6 @@
+# Hugo 生成物与本地工具不入库
+public/
+resources/
+.hugo_build.lock
+tools/
+Thumbs.db

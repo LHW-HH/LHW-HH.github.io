@@ -1,0 +1,21 @@
+# 站点基本配置
+baseURL = 'https://lhw-hh.github.io/'   # GitHub Pages 正式地址
+languageCode = 'zh-cn'
+defaultContentLanguage = 'zh-cn'
+title = 'LHW 的个人博客'                # 站点标题，随便改
+theme = 'Stack'                         # 使用 themes/Stack 主题
+
+[pagination]
+pagerSize = 10                          # 每页文章数
+
+[params]
+mainSections = ['post']                 # 首页展示的文章分区
+description = '记录与总结'              # 站点描述
+
+[params.author]
+name = 'LHW'                            # 你的名字，改这里
+
+# 分类：文章会按标签/分类归档
+[taxonomies]
+tag = 'tags'
+category = 'categories'

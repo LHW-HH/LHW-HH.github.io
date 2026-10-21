@@ -1,0 +1,21 @@
+{{/* 本地开发时在页面左下角加"写新文章"入口，线上部署（hugo 生产构建）不渲染 */}}
+{{ if hugo.IsServer }}
+<style>
+  .writer-fab{position:fixed;left:22px;bottom:22px;background:#4a6cf7;color:#fff;
+    padding:11px 20px;border-radius:999px;font-size:14px;font-weight:600;
+    box-shadow:0 4px 16px rgba(74,108,247,.35);z-index:999;text-decoration:none;
+    font-family:"Microsoft YaHei",sans-serif;display:inline-flex;align-items:center;gap:6px}
+  .writer-fab:hover{background:#3a5af0;transform:translateY(-1px);transition:all .15s}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var a = document.createElement('a');
+  a.className = 'writer-fab';
+  a.href = 'http://127.0.0.1:1314/';
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.textContent = '✍️ 写新文章';
+  document.body.appendChild(a);
+});
+</script>
+{{ end }}
