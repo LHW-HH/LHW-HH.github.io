@@ -25,20 +25,20 @@ subtitle = '一些记录，一些总结'
 [[menu.main]]
 identifier = 'about'
 name = '关于'
-pageRef = '/about'
+url = '/about/'
 weight = 1
 
 [[menu.main]]
 identifier = 'archives'
 name = '归档'
-pageRef = '/archives'
+url = '/archives/'
 pre = 'archives'
 weight = 2
 
 [[menu.main]]
 identifier = 'search'
 name = '搜索'
-pageRef = '/search'
+url = '/search/'
 pre = 'search'
 weight = 3
 
