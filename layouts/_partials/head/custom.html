@@ -1,5 +1,5 @@
 {{/* 本地开发时在页面左下角加"写新文章"入口，线上部署（hugo 生产构建）不渲染 */}}
-{{ if hugo.IsServer }}
+{{ if and hugo.IsServer (not .IsHome) }}
 <style>
   .writer-fab{position:fixed;left:22px;bottom:22px;background:#4a6cf7;color:#fff;
     padding:11px 20px;border-radius:999px;font-size:14px;font-weight:600;
@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 {{ end }}
 
-{{/* ============ 流彩极光背景 v2：明显可见的多层流动彩虹 ============ */}}
+{{/* 首页使用独立 3D 场景，其他页面继续保留流彩极光背景。 */}}
+{{ if not .IsHome }}
 <style>
   /* 打底：三层光团，全部可见、颜色足量 */
   html{background-color:var(--body-background)}
@@ -85,3 +86,75 @@ document.addEventListener('DOMContentLoaded', function () {
     html::before, body::before, body::after{ animation:none }
   }
 </style>
+<style>
+  /* 内容页沿用首页的深空档案配色。 */
+  :root,
+  :root[data-scheme="light"],
+  :root[data-scheme="dark"]{
+    --body-background:#050713;
+    --card-background:rgba(9,16,38,.82);
+    --card-background-selected:rgba(111,156,255,.16);
+    --card-text-color-main:#f4f6ff;
+    --card-text-color-secondary:rgba(226,232,255,.68);
+    --card-text-color-tertiary:rgba(214,222,255,.46);
+    --accent-color:#6f9cff;
+    --accent-color-darker:#67f5d4;
+    --accent-color-text:#050713;
+  }
+
+  html{background:#050713}
+  body{color:var(--card-text-color-main)}
+
+  html::before{
+    inset:-25vmax;
+    background:
+      radial-gradient(circle at 68% 28%,rgba(54,87,217,.34),transparent 26%),
+      radial-gradient(circle at 24% 72%,rgba(143,73,218,.24),transparent 31%),
+      radial-gradient(circle at 82% 78%,rgba(53,200,181,.14),transparent 26%);
+    filter:blur(110px);
+    opacity:.78;
+    animation:spin-slow 120s linear infinite;
+  }
+
+  body::before{
+    background:
+      radial-gradient(closest-side at 35% 32%,rgba(80,119,255,.35),transparent 72%),
+      radial-gradient(closest-side at 66% 42%,rgba(169,91,255,.25),transparent 74%);
+    filter:blur(80px);
+    opacity:.48;
+  }
+
+  body::after{
+    background:
+      radial-gradient(closest-side at 44% 60%,rgba(66,224,200,.22),transparent 72%),
+      radial-gradient(closest-side at 62% 44%,rgba(89,111,255,.2),transparent 74%);
+    filter:blur(90px);
+    opacity:.4;
+  }
+
+  .section-card,
+  .article-list--compact article,
+  .article-list article,
+  .article-page,
+  .main article{
+    border:1px solid rgba(213,224,255,.12);
+    box-shadow:0 24px 70px rgba(0,0,0,.26);
+    backdrop-filter:blur(18px);
+  }
+
+  .sidebar.left-sidebar{
+    padding:22px 18px;
+    border:1px solid transparent;
+    border-radius:20px;
+  }
+
+  .site-name a,
+  .site-description{
+    color:var(--card-text-color-main);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html::before, body::before, body::after{ animation:none }
+  }
+</style>
+{{ end }}

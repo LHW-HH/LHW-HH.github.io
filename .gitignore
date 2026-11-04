@@ -3,4 +3,5 @@ public/
 resources/
 .hugo_build.lock
 tools/
+.writer-uploads/
 Thumbs.db

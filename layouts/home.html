@@ -1,0 +1,200 @@
+{{ define "body-class" }}home-world{{ end }}
+
+{{ define "head" }}
+    {{ $homeCSS := resources.Get "css/home-world.css" | minify | fingerprint }}
+    {{ $coverCSS := resources.Get "css/planet-cover.css" | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $homeCSS.RelPermalink }}" integrity="{{ $homeCSS.Data.Integrity }}">
+    <link rel="stylesheet" href="{{ $coverCSS.RelPermalink }}" integrity="{{ $coverCSS.Data.Integrity }}">
+    <link rel="preconnect" href="https://d2ol7oe51mr4n9.cloudfront.net" crossorigin>
+
+    {{ $coverScript := resources.Get "js/planet-cover.js" | minify | fingerprint }}
+    <script type="module" src="{{ $coverScript.RelPermalink }}" integrity="{{ $coverScript.Data.Integrity }}"></script>
+{{ end }}
+
+{{ define "left-sidebar" }}{{ end }}
+{{ define "right-sidebar" }}{{ end }}
+
+{{ define "main" }}
+<div class="archive-world">
+    <section id="top" class="planet-cover experience" data-planet="mars" aria-label="Planet Jumping">
+        <div class="backgrounds" aria-hidden="true">
+            <video id="mars-background" class="background is-visible" muted playsinline preload="auto"
+                src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/3c83091e-4046-4fd6-adbb-2edb728be79a.mp4"></video>
+        </div>
+
+        <div class="preloader" id="preloader" aria-label="Loading Mars">
+            <video id="preloader-video" muted playsinline preload="auto"
+                src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/5fc5651c-3b5d-4171-b507-87f7e635d1b4.mp4"></video>
+            <div class="preloader-shade"></div>
+        </div>
+
+        <img class="floating-logo" id="floating-logo" alt="LHW"
+            src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/eb7e0f53-50cd-4af5-abc4-8b9a52cdc01b.svg">
+
+        <div class="preloader-count" id="preloader-count" aria-live="polite">
+            <span id="preloader-value">0</span><span class="percent">%</span>
+        </div>
+
+        <div class="shade" aria-hidden="true"></div>
+
+        <header class="header chrome">
+            <div class="header-actions">
+                <nav class="nav" aria-label="主导航">
+                    <a class="active" href="#top">首页</a>
+                    <a href="{{ "life/" | relURL }}">生活</a>
+                    <a href="{{ "tech/" | relURL }}">技术</a>
+                    <a href="{{ "projects/" | relURL }}">项目</a>
+                </nav>
+                <a class="menu" href="#paths">进入博客</a>
+            </div>
+        </header>
+
+        <aside class="planet-list chrome" aria-label="Planets"></aside>
+
+        <section class="portal-deck chrome" aria-label="内容入口">
+            <div class="portal-heading">
+                <span>选择一条轨道</span>
+            </div>
+            <div class="portal-grid">
+                <a class="category-portal category-portal--life"
+                    href="{{ "life/" | relURL }}"
+                    data-video="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/fc3ded42-e845-41f3-a830-5cab512d79cd.mp4"
+                    aria-label="进入生活随笔">
+                    <canvas class="category-portal__canvas" aria-hidden="true"></canvas>
+                    <video class="category-portal__video" muted playsinline preload="metadata"></video>
+                    <span class="category-portal__label">
+                        <strong>生活随笔</strong>
+                        <small>日常与思考</small>
+                    </span>
+                </a>
+
+                <a class="category-portal category-portal--projects"
+                    href="{{ "projects/" | relURL }}"
+                    data-video="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/5fc5651c-3b5d-4171-b507-87f7e635d1b4.mp4"
+                    aria-label="进入项目进程">
+                    <canvas class="category-portal__canvas" aria-hidden="true"></canvas>
+                    <video class="category-portal__video" muted playsinline preload="metadata"></video>
+                    <span class="category-portal__label">
+                        <strong>项目进程</strong>
+                        <small>从想法到上线</small>
+                    </span>
+                </a>
+
+                <a class="category-portal category-portal--tech"
+                    href="{{ "tech/" | relURL }}"
+                    data-video="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/b30f64d9-1637-477a-83df-d0fc6461a422.mp4"
+                    aria-label="进入技术报告">
+                    <canvas class="category-portal__canvas" aria-hidden="true"></canvas>
+                    <video class="category-portal__video" muted playsinline preload="metadata"></video>
+                    <span class="category-portal__label">
+                        <strong>技术报告</strong>
+                        <small>方法与结论</small>
+                    </span>
+                </a>
+            </div>
+        </section>
+
+        <section class="planet-content chrome" aria-live="polite">
+            <h1 id="planet-title">MARS</h1>
+            <dl id="facts"></dl>
+        </section>
+
+        <div class="custom-cursor" aria-hidden="true">
+            <span class="cursor-orbit"></span>
+            <span class="cursor-dot"></span>
+            <span class="cursor-label">进入</span>
+        </div>
+        <noscript><a href="#paths">进入博客正文</a></noscript>
+    </section>
+
+    <div class="world-story">
+        <section id="paths" class="world-chapter world-paths">
+            <header class="section-intro">
+                <p class="section-kicker">三条内容轨道</p>
+                <h2>在不同的生活现场，<br>留下不同尺度的记录。</h2>
+                <p>
+                    朋友可以从随笔进入，技术同行可以直接找到报告与项目进程。
+                    每条轨道独立生长，也会在首页重新汇合。
+                </p>
+            </header>
+
+            <div class="path-list">
+                <a class="path-band path-band--life" href="{{ "life/" | relURL }}">
+                    <span class="path-band__signal" aria-hidden="true"></span>
+                    <span class="path-band__index">A</span>
+                    <span class="path-band__copy">
+                        <strong>生活随笔</strong>
+                        <small>日常里值得停留的瞬间，和一些还没有答案的问题。</small>
+                    </span>
+                    <span class="path-band__action">进入生活轨道</span>
+                </a>
+
+                <a class="path-band path-band--tech" href="{{ "tech/" | relURL }}">
+                    <span class="path-band__signal" aria-hidden="true"></span>
+                    <span class="path-band__index">B</span>
+                    <span class="path-band__copy">
+                        <strong>技术报告</strong>
+                        <small>学习过程、工具实践，以及可以复用的技术结论。</small>
+                    </span>
+                    <span class="path-band__action">进入技术轨道</span>
+                </a>
+
+                <a class="path-band path-band--project" href="{{ "projects/" | relURL }}">
+                    <span class="path-band__signal" aria-hidden="true"></span>
+                    <span class="path-band__index">C</span>
+                    <span class="path-band__copy">
+                        <strong>项目进程</strong>
+                        <small>从想法到上线，保留决策、问题与下一步推进。</small>
+                    </span>
+                    <span class="path-band__action">进入项目轨道</span>
+                </a>
+            </div>
+        </section>
+
+        <section id="latest" class="world-chapter world-latest">
+            {{ $posts := where site.RegularPages "Section" "post" }}
+            {{ $posts = $posts.ByDate.Reverse }}
+
+            <header class="latest-heading">
+                <div>
+                    <p class="section-kicker">最近写入</p>
+                    <h2>档案还在生长。</h2>
+                </div>
+                <a class="quiet-link" href="{{ "archives/" | relURL }}">查看全部归档</a>
+            </header>
+
+            {{ with $posts }}
+                <div class="latest-index">
+                    {{ range first 6 . }}
+                        {{ $category := "未分类" }}
+                        {{ with .Params.categories }}
+                            {{ $category = index . 0 }}
+                        {{ end }}
+                        <article class="latest-entry">
+                            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "01.02" }}</time>
+                            <span class="latest-entry__category">{{ $category }}</span>
+                            <a href="{{ .RelPermalink }}">
+                                <h3>{{ .Title }}</h3>
+                                {{ with .Description }}<p>{{ . }}</p>{{ end }}
+                            </a>
+                        </article>
+                    {{ end }}
+                </div>
+            {{ else }}
+                <div class="empty-archive">
+                    <p>还没有文章。第一篇记录会从这里亮起来。</p>
+                </div>
+            {{ end }}
+
+            <footer class="world-footer">
+                <p>LHW 的个人档案，记录生活、技术与正在成形的东西。</p>
+                <nav aria-label="页脚导航">
+                    <a href="{{ "about/" | relURL }}">关于</a>
+                    <a href="{{ "archives/" | relURL }}">归档</a>
+                    <a href="https://github.com/LHW-HH" target="_blank" rel="me noopener">GitHub</a>
+                </nav>
+            </footer>
+        </section>
+    </div>
+</div>
+{{ end }}

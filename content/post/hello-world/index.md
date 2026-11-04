@@ -4,7 +4,7 @@ description: "开始记录自己"
 date: 2026-10-21T00:00:00+08:00
 draft: false
 tags: ["随笔"]
-categories: ["起点"]
+categories: ["生活随笔"]
 ---
 
 # 你好，世界

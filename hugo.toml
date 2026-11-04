@@ -21,20 +21,44 @@ compact = false
 avatar = 'img/avatar.svg'
 subtitle = '一些记录，一些总结'
 
-# 顶部菜单：归档 / 搜索
+# 顶部菜单：内容分类、关于、归档与搜索
+[[menu.main]]
+identifier = 'life'
+name = '生活'
+pageRef = '/life'
+weight = 1
+
+[[menu.main]]
+identifier = 'tech'
+name = '技术报告'
+pageRef = '/tech'
+weight = 2
+
+[[menu.main]]
+identifier = 'projects'
+name = '项目进程'
+pageRef = '/projects'
+weight = 3
+
+[[menu.main]]
+identifier = 'about'
+name = '关于'
+pageRef = '/about'
+weight = 4
+
 [[menu.main]]
 identifier = 'archives'
 name = '归档'
 pageRef = '/archives'
 pre = 'archives'
-weight = 1
+weight = 5
 
 [[menu.main]]
 identifier = 'search'
 name = '搜索'
 pageRef = '/search'
 pre = 'search'
-weight = 2
+weight = 6
 
 # 侧边栏社交链接
 [[menu.social]]

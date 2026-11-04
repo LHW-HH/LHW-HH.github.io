@@ -1,0 +1,38 @@
+{{ define "main" }}
+    {{ $category := .Params.category }}
+    {{ $posts := where site.RegularPages "Section" "post" }}
+
+    <header class="section-card">
+        <div class="section-details">
+            <h3 class="section-count">{{ .Params.channel }}</h3>
+            <h1 class="section-term">{{ .Title }}</h1>
+            {{ with .Params.description }}
+                <h2 class="section-description">{{ . }}</h2>
+            {{ end }}
+        </div>
+    </header>
+
+    <section class="article-list--compact">
+        {{ $found := false }}
+        {{ range $posts.ByDate.Reverse }}
+            {{ if in .Params.categories $category }}
+                {{ $found = true }}
+                {{ partial "article-list/compact" . }}
+            {{ end }}
+        {{ end }}
+        {{ if not $found }}
+            <article>
+                <div class="article-details">
+                    <p>这条轨道还没有文章。下一次记录会出现在这里。</p>
+                </div>
+            </article>
+        {{ end }}
+    </section>
+
+    <p><a href="{{ .Site.Home.RelPermalink }}">返回首页</a></p>
+    {{ partialCached "footer/footer" . }}
+{{ end }}
+
+{{ define "right-sidebar" }}
+    {{ partial "sidebar/right.html" (dict "Context" . "Scope" "homepage") }}
+{{ end }}
