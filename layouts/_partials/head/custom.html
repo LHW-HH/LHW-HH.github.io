@@ -1,166 +1,45 @@
-{{/* 本地开发时在页面左下角加"写新文章"入口，线上部署（hugo 生产构建）不渲染 */}}
+<style>
+  :root {
+    --base-font-family: "SF Pro", "Noto Sans CJK SC", "Microsoft YaHei UI", Arial, sans-serif;
+    --article-font-family: "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", STSong, serif;
+    --code-font-family: "Cascadia Mono", Consolas, monospace;
+  }
+</style>
+
 {{ if and hugo.IsServer (not .IsHome) }}
 <style>
-  .writer-fab{position:fixed;left:22px;bottom:22px;background:#4a6cf7;color:#fff;
-    padding:11px 20px;border-radius:999px;font-size:14px;font-weight:600;
-    box-shadow:0 4px 16px rgba(74,108,247,.35);z-index:999;text-decoration:none;
-    font-family:"Microsoft YaHei",sans-serif;display:inline-flex;align-items:center;gap:6px}
-  .writer-fab:hover{background:#3a5af0;transform:translateY(-1px);transition:all .15s}
+.archive-shell .writer-fab {
+    position: fixed;
+    bottom: 18px;
+    left: 18px;
+    z-index: 100;
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    padding: 0 15px;
+    border-radius: 999px;
+    color: #090807;
+    background: #8db2ff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  .archive-shell .writer-fab:hover {
+    background: #67f5d4;
+  }
 </style>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  var a = document.createElement('a');
-  a.className = 'writer-fab';
-  a.href = 'http://127.0.0.1:1314/';
-  a.target = '_blank';
-  a.rel = 'noopener';
-  a.textContent = '✍️ 写新文章';
-  document.body.appendChild(a);
-});
+  document.addEventListener("DOMContentLoaded", function () {
+    var link = document.createElement("a");
+    link.className = "writer-fab";
+    link.href = "http://127.0.0.1:1314/";
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = "写新文章";
+    document.body.appendChild(link);
+  });
 </script>
-{{ end }}
-
-{{/* 首页使用独立 3D 场景，其他页面继续保留流彩极光背景。 */}}
-{{ if not .IsHome }}
-<style>
-  /* 打底：三层光团，全部可见、颜色足量 */
-  html{background-color:var(--body-background)}
-  body{background-color:transparent !important}
-
-  /* 第一层：全屏彩虹网膜（旋转） */
-  html::before{
-    content:""; position:fixed; inset:-40vmax; z-index:-3; pointer-events:none;
-    background:conic-gradient(from 0deg at 50% 50%,
-      rgba(90,140,255,.30), rgba(150,100,255,.30), rgba(255,110,200,.28),
-      rgba(255,180,90,.26), rgba(110,230,205,.28), rgba(90,140,255,.30));
-    filter:blur(120px);
-    opacity:.55;
-    animation:spin-slow 90s linear infinite;
-  }
-
-  /* 第二层：左上大光团（来回漂移+变色） */
-  body::before{
-    content:""; position:fixed; top:-16vmax; left:-10vmax; z-index:-2;
-    width:66vmax; height:66vmax; border-radius:50%; pointer-events:none;
-    will-change:transform,filter; opacity:.75;
-    background:
-      radial-gradient(closest-side at 30% 30%, rgba(96,150,255,.55), transparent 74%),
-      radial-gradient(closest-side at 64% 40%, rgba(170,110,255,.50), transparent 72%),
-      radial-gradient(closest-side at 48% 72%, rgba(255,110,200,.40), transparent 74%);
-    filter:blur(64px);
-    animation:drift-a 30s ease-in-out infinite alternate;
-  }
-
-  /* 第三层：右下大光团 */
-  body::after{
-    content:""; position:fixed; bottom:-18vmax; right:-8vmax; z-index:-2;
-    width:62vmax; height:62vmax; border-radius:50%; pointer-events:none;
-    will-change:transform,filter; opacity:.75;
-    background:
-      radial-gradient(closest-side at 38% 34%, rgba(110,232,208,.48), transparent 74%),
-      radial-gradient(closest-side at 66% 56%, rgba(255,186,100,.45), transparent 72%),
-      radial-gradient(closest-side at 45% 70%, rgba(255,140,170,.38), transparent 74%);
-    filter:blur(64px);
-    animation:drift-b 36s ease-in-out infinite alternate;
-  }
-
-  :root[data-scheme="dark"] html::before{ opacity:.34 }
-  :root[data-scheme="dark"] body::before,
-  :root[data-scheme="dark"] body::after{ opacity:.55; filter:blur(70px) }
-
-  @keyframes spin-slow{ to{ transform:rotate(360deg) } }
-  @keyframes drift-a{
-    0%{ transform:translate(0,0) rotate(0deg) scale(1); filter:blur(64px) hue-rotate(0deg) }
-    33%{ transform:translate(7vmax,4vmax) rotate(14deg) scale(1.1); filter:blur(72px) hue-rotate(30deg) }
-    66%{ transform:translate(3vmax,9vmax) rotate(30deg) scale(1.22); filter:blur(64px) hue-rotate(60deg) }
-    100%{ transform:translate(10vmax,2vmax) rotate(50deg) scale(1.08); filter:blur(72px) hue-rotate(90deg) }
-  }
-  @keyframes drift-b{
-    0%{ transform:translate(0,0) rotate(0deg) scale(1.05); filter:blur(72px) hue-rotate(0deg) }
-    33%{ transform:translate(-6vmax,-4vmax) rotate(-12deg) scale(1.16); filter:blur(64px) hue-rotate(-30deg) }
-    66%{ transform:translate(-10vmax,-1vmax) rotate(-26deg) scale(1.0); filter:blur(72px) hue-rotate(-60deg) }
-    100%{ transform:translate(-4vmax,-8vmax) rotate(-45deg) scale(1.18); filter:blur(64px) hue-rotate(-90deg) }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    html::before, body::before, body::after{ animation:none }
-  }
-</style>
-<style>
-  :root{
-    --base-font-family:"Noto Sans CJK SC","Source Han Sans SC","Microsoft YaHei UI",sans-serif;
-    --article-font-family:"Noto Serif CJK SC","Source Han Serif SC","Songti SC",STSong,serif;
-    --code-font-family:"Cascadia Mono",Consolas,monospace;
-  }
-
-  /* 内容页沿用首页的深空档案配色。 */
-  :root,
-  :root[data-scheme="light"],
-  :root[data-scheme="dark"]{
-    --body-background:#050713;
-    --card-background:rgba(9,16,38,.82);
-    --card-background-selected:rgba(111,156,255,.16);
-    --card-text-color-main:#f4f6ff;
-    --card-text-color-secondary:rgba(226,232,255,.68);
-    --card-text-color-tertiary:rgba(214,222,255,.46);
-    --accent-color:#6f9cff;
-    --accent-color-darker:#67f5d4;
-    --accent-color-text:#050713;
-  }
-
-  html{background:#050713}
-  body{color:var(--card-text-color-main)}
-
-  html::before{
-    inset:-25vmax;
-    background:
-      radial-gradient(circle at 68% 28%,rgba(54,87,217,.34),transparent 26%),
-      radial-gradient(circle at 24% 72%,rgba(143,73,218,.24),transparent 31%),
-      radial-gradient(circle at 82% 78%,rgba(53,200,181,.14),transparent 26%);
-    filter:blur(110px);
-    opacity:.78;
-    animation:spin-slow 120s linear infinite;
-  }
-
-  body::before{
-    background:
-      radial-gradient(closest-side at 35% 32%,rgba(80,119,255,.35),transparent 72%),
-      radial-gradient(closest-side at 66% 42%,rgba(169,91,255,.25),transparent 74%);
-    filter:blur(80px);
-    opacity:.48;
-  }
-
-  body::after{
-    background:
-      radial-gradient(closest-side at 44% 60%,rgba(66,224,200,.22),transparent 72%),
-      radial-gradient(closest-side at 62% 44%,rgba(89,111,255,.2),transparent 74%);
-    filter:blur(90px);
-    opacity:.4;
-  }
-
-  .section-card,
-  .article-list--compact article,
-  .article-list article,
-  .article-page,
-  .main article{
-    border:1px solid rgba(213,224,255,.12);
-    box-shadow:0 24px 70px rgba(0,0,0,.26);
-    backdrop-filter:blur(18px);
-  }
-
-  .sidebar.left-sidebar{
-    padding:22px 18px;
-    border:1px solid transparent;
-    border-radius:20px;
-  }
-
-  .site-name a,
-  .site-description{
-    color:var(--card-text-color-main);
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    html::before, body::before, body::after{ animation:none }
-  }
-</style>
 {{ end }}

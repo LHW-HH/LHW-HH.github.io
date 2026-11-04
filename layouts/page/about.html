@@ -1,55 +1,53 @@
-{{ define "body-class" }}article-page about-page{{ end }}
-
-{{ define "head" }}
-    {{ $aboutCSS := resources.Get "css/about.css" | minify | fingerprint }}
-    <link rel="stylesheet" href="{{ $aboutCSS.RelPermalink }}" integrity="{{ $aboutCSS.Data.Integrity }}">
-{{ end }}
+{{ define "body-class" }}archive-about-page about-page{{ end }}
 
 {{ define "main" }}
     {{ $site := hugo.Data.site }}
     {{ $profile := $site.profile }}
+    {{ $avatar := partial "helper/image" (dict "Image" .Site.Params.sidebar.avatar "Resources" resources "Context" .) }}
 
-    <article class="main-article about-article">
-        <header class="article-header">
-            <div class="article-details">
-                <h1 class="article-title">{{ .Title }}</h1>
-                {{ with .Description }}<h2 class="article-subtitle">{{ . }}</h2>{{ end }}
-            </div>
-        </header>
-
-        <div class="about-layout">
-            <section class="article-content">
-                {{ .Content }}
-            </section>
-
-            <aside class="about-profile" aria-label="个人资料与联系方式">
-                <h2>个人资料</h2>
-                <dl class="profile-facts">
-                    {{ with $profile.school }}<div><dt>学校</dt><dd>{{ . }}</dd></div>{{ end }}
-                    {{ with $profile.birthday }}<div><dt>生日</dt><dd>{{ . }}</dd></div>{{ end }}
-                </dl>
-
-                <div class="contact-links" aria-label="联系方式">
-                    {{ with $profile.wechat }}
-                        <button type="button" data-copy-value="{{ . }}" data-copy-label="微信" aria-label="复制微信号">
-                            <img src="{{ "icons/wechat.svg" | relURL }}" alt="">
-                        </button>
-                    {{ end }}
-                    {{ with $profile.qq }}
-                        <button type="button" data-copy-value="{{ . }}" data-copy-label="QQ" aria-label="复制 QQ 号">
-                            <img src="{{ "icons/qq.svg" | relURL }}" alt="">
-                        </button>
-                    {{ end }}
-                    {{ with $profile.github }}
-                        <a href="{{ . }}" target="_blank" rel="me noopener" aria-label="打开 GitHub">
-                            <img src="{{ "icons/github.svg" | relURL }}" alt="">
-                        </a>
-                    {{ end }}
-                    <span class="copy-status" aria-live="polite"></span>
-                </div>
-            </aside>
+    <header class="archive-about-hero">
+        <figure class="archive-about-hero__avatar">
+            <img src="{{ $avatar.Permalink }}"
+                width="{{ $avatar.Width }}"
+                height="{{ $avatar.Height }}"
+                alt="LHW 的头像">
+        </figure>
+        <div>
+            <h1>{{ .Title }}</h1>
+            {{ with .Description }}<p>{{ . }}</p>{{ end }}
         </div>
-    </article>
+    </header>
 
-    {{ partialCached "footer/footer" . }}
+    <div class="about-layout">
+        <section class="article-content">
+            {{ .Content }}
+        </section>
+
+        <aside class="about-profile" aria-label="个人资料与联系方式">
+            <h2>个人资料</h2>
+            <dl class="profile-facts">
+                {{ with $profile.school }}<div><dt>学校</dt><dd>{{ . }}</dd></div>{{ end }}
+                {{ with $profile.birthday }}<div><dt>生日</dt><dd>{{ . }}</dd></div>{{ end }}
+            </dl>
+
+            <div class="contact-links" aria-label="联系方式">
+                {{ with $profile.wechat }}
+                    <button type="button" data-copy-value="{{ . }}" data-copy-label="微信" aria-label="复制微信号">
+                        <img src="{{ "icons/wechat.svg" | relURL }}" alt="">
+                    </button>
+                {{ end }}
+                {{ with $profile.qq }}
+                    <button type="button" data-copy-value="{{ . }}" data-copy-label="QQ" aria-label="复制 QQ 号">
+                        <img src="{{ "icons/qq.svg" | relURL }}" alt="">
+                    </button>
+                {{ end }}
+                {{ with $profile.github }}
+                    <a href="{{ . }}" target="_blank" rel="me noopener" aria-label="打开 GitHub">
+                        <img src="{{ "icons/github.svg" | relURL }}" alt="">
+                    </a>
+                {{ end }}
+                <span class="copy-status" aria-live="polite"></span>
+            </div>
+        </aside>
+    </div>
 {{ end }}

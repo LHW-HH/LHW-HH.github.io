@@ -1,0 +1,38 @@
+{{ define "body-class" }}archive-search{{ end }}
+
+{{ define "head" }}
+    {{- with .OutputFormats.Get "json" -}}
+        <link rel="preload" href="{{ .RelPermalink }}" as="fetch" crossorigin="anonymous">
+    {{- end -}}
+{{ end }}
+
+{{ define "main" }}
+    <header class="archive-page-heading">
+        <h1>搜索档案</h1>
+        <p>按标题、正文或标签查找已经写入网站的内容。</p>
+    </header>
+
+    <form action="{{ .RelPermalink }}" class="search-form"
+        {{ with .OutputFormats.Get "json" -}}data-json="{{ .RelPermalink }}"{{- end }}>
+        <p>
+            <label for="archive-search-input">关键词</label>
+            <input id="archive-search-input" name="keyword" placeholder="输入要查找的内容" autocomplete="off">
+        </p>
+        <button type="submit" aria-label="搜索">
+            {{ partial "helper/icon" "search" }}
+        </button>
+    </form>
+
+    <div class="search-result hidden">
+        <h2 class="search-result--title"></h2>
+        <div class="search-result--list article-list--compact"></div>
+    </div>
+
+    <script>
+        window.searchResultTitleTemplate = "找到 #PAGES_COUNT 篇文章（用时 #TIME_SECONDS 秒）";
+    </script>
+
+    {{- $opts := dict "minify" hugo.IsProduction "JSXFactory" "createElement" -}}
+    {{- $searchScript := resources.Get "ts/search.tsx" | js.Build $opts -}}
+    <script type="text/javascript" src="{{ $searchScript.RelPermalink }}" defer></script>
+{{ end }}

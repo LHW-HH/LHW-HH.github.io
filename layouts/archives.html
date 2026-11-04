@@ -1,0 +1,33 @@
+{{ define "body-class" }}archive-archive-page{{ end }}
+
+{{ define "main" }}
+    {{ $posts := where site.RegularPages "Section" "post" }}
+
+    <header class="archive-page-heading">
+        <h1>全部文章</h1>
+        <p>按时间回看已经写下的生活、技术报告和项目进程。</p>
+    </header>
+
+    <div class="archive-case-list">
+        {{ range $posts.ByDate.Reverse.GroupByDate "2006" }}
+            <section class="archive-year-group" aria-labelledby="year-{{ .Key }}">
+                <h2 class="archive-year" id="year-{{ .Key }}">{{ .Key }}</h2>
+                <div class="archive-entry-list">
+                    {{ range .Pages }}
+                        {{ $category := "未分类" }}
+                        {{ with .Params.categories }}{{ $category = index . 0 }}{{ end }}
+                        <a class="archive-entry" href="{{ .RelPermalink }}">
+                            <time class="archive-entry__date" datetime="{{ .Date.Format "2006-01-02" }}">
+                                {{ .Date.Format "01.02" }}
+                            </time>
+                            <h3>{{ .Title }}</h3>
+                            {{ with .Description }}<p>{{ . }}</p>{{ end }}
+                        </a>
+                    {{ end }}
+                </div>
+            </section>
+        {{ else }}
+            <p class="archive-empty">还没有文章。</p>
+        {{ end }}
+    </div>
+{{ end }}

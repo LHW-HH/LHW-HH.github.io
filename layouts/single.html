@@ -1,0 +1,41 @@
+{{ define "body-class" }}archive-article-page{{ end }}
+
+{{ define "main" }}
+    {{ $categories := .GetTerms "categories" }}
+    {{ $primaryCategory := "" }}
+    {{ with $categories }}
+        {{ $primaryCategory = (index . 0).LinkTitle }}
+    {{ end }}
+
+    <article class="archive-article">
+        <header class="archive-article__header">
+            <nav class="archive-article__meta" aria-label="文章信息">
+                {{ with $categories }}
+                    {{ range . }}
+                        <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+                    {{ end }}
+                {{ end }}
+                <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年1月2日" }}</time>
+                <span>阅读时间 {{ .ReadingTime }} 分钟</span>
+            </nav>
+            <h1 class="archive-article__title">{{ .Title }}</h1>
+            {{ with .Description }}<p class="archive-article__description">{{ . }}</p>{{ end }}
+        </header>
+
+        <section class="archive-prose">
+            {{ $wrappedTable := printf "<div class=\"table-wrapper\">${1}</div>" }}
+            {{ .Content | replaceRE "(<table>(?:.|\n)+?</table>)" $wrappedTable | safeHTML }}
+        </section>
+
+        <nav class="archive-article__footer" aria-label="文章导航">
+            <a href="{{ .Site.Home.RelPermalink }}">返回首页</a>
+            {{ with $categories }}
+                <a href="{{ (index . 0).RelPermalink }}">返回{{ $primaryCategory }}</a>
+            {{ end }}
+        </nav>
+
+        {{ if not (eq .Params.comments false) }}
+            {{ partial "comments/include" . }}
+        {{ end }}
+    </article>
+{{ end }}

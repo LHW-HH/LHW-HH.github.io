@@ -11,7 +11,7 @@ items:
     href: /life/
     media_type: video
     media: https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/fc3ded42-e845-41f3-a830-5cab512d79cd.mp4
-    poster: ""
+    poster: /images/category/life-poster.jpg
 
   - id: projects
     name: 项目进程
@@ -23,7 +23,7 @@ items:
     href: /projects/
     media_type: video
     media: https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/5fc5651c-3b5d-4171-b507-87f7e635d1b4.mp4
-    poster: ""
+    poster: /images/category/projects-poster.jpg
 
   - id: tech
     name: 技术报告
@@ -35,4 +35,4 @@ items:
     href: /tech/
     media_type: video
     media: https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/b30f64d9-1637-477a-83df-d0fc6461a422.mp4
-    poster: ""
+    poster: /images/category/tech-poster.jpg

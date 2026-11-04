@@ -1,40 +1,52 @@
-{{ define "body-class" }}category-page{{ end }}
+{{ define "body-class" }}archive-category-page category-page{{ end }}
 
 {{ define "main" }}
     {{ $category := index (where hugo.Data.categories.items "id" .Params.sectionid) 0 }}
     {{ $posts := where site.RegularPages "Section" "post" }}
+    {{ $categoryPosts := where $posts "Params.categories" "intersect" (slice $category.category) }}
 
-    <header class="section-card">
-        <div class="section-details">
-            <h3 class="section-count">{{ $category.channel }}</h3>
-            <h1 class="section-term">{{ $category.name }}</h1>
-            {{ with $category.description }}
-                <h2 class="section-description">{{ . }}</h2>
-            {{ end }}
-        </div>
-    </header>
+    <article class="archive-category">
+        <header class="archive-category-hero">
+            <div class="archive-category-hero__media" aria-hidden="true">
+                {{ if eq $category.media_type "image" }}
+                    {{ with $category.media }}<img src="{{ . }}" alt="">{{ end }}
+                {{ else if $category.media }}
+                    <video autoplay muted loop playsinline preload="metadata"
+                        {{ with $category.poster }}poster="{{ . }}"{{ end }}>
+                        <source src="{{ $category.media }}">
+                    </video>
+                {{ end }}
+            </div>
+            <div class="archive-category-hero__copy">
+                <h1>{{ $category.name }}</h1>
+                <p class="archive-category-hero__description">{{ $category.description }}</p>
+                <span class="archive-category-hero__channel">
+                    {{ $category.channel }} · {{ len $categoryPosts }} 篇记录
+                </span>
+            </div>
+        </header>
 
-    <section class="article-list--compact">
-        {{ $found := false }}
-        {{ range $posts.ByDate.Reverse }}
-            {{ if in .Params.categories $category.category }}
-                {{ $found = true }}
-                {{ partial "article-list/compact" . }}
-            {{ end }}
-        {{ end }}
-        {{ if not $found }}
-            <article>
-                <div class="article-details">
-                    <p>这条轨道还没有文章。下一次记录会出现在这里。</p>
+        <section class="archive-section" aria-labelledby="category-posts">
+            <header class="archive-section-heading">
+                <h2 id="category-posts">文章</h2>
+                <a href="{{ "archives/" | relURL }}">查看全部归档</a>
+            </header>
+
+            {{ with $categoryPosts.ByDate.Reverse }}
+                <div class="archive-entry-list">
+                    {{ range . }}
+                        <a class="archive-entry" href="{{ .RelPermalink }}">
+                            <time class="archive-entry__date" datetime="{{ .Date.Format "2006-01-02" }}">
+                                {{ .Date.Format "2006.01.02" }}
+                            </time>
+                            <h3>{{ .Title }}</h3>
+                            {{ with .Description }}<p>{{ . }}</p>{{ end }}
+                        </a>
+                    {{ end }}
                 </div>
-            </article>
-        {{ end }}
-    </section>
-
-    <p><a href="{{ .Site.Home.RelPermalink }}">返回首页</a></p>
-    {{ partialCached "footer/footer" . }}
-{{ end }}
-
-{{ define "right-sidebar" }}
-    {{ partial "sidebar/right.html" (dict "Context" . "Scope" "homepage") }}
+            {{ else }}
+                <p class="archive-empty">这条轨道还没有文章。下一篇记录会从这里开始。</p>
+            {{ end }}
+        </section>
+    </article>
 {{ end }}

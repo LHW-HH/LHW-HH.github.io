@@ -1,0 +1,12 @@
+{{ $currentPage := . }}
+{{ range hugo.Data.categories.items }}
+    {{ $href := .href | relURL }}
+    <a href="{{ $href }}" {{ if eq $currentPage.RelPermalink $href }}aria-current="page"{{ end }}>
+        {{ .nav_name | default .name }}
+    </a>
+{{ end }}
+{{ range .Site.Menus.main }}
+    <a href="{{ .URL }}" {{ if eq $currentPage.RelPermalink .URL }}aria-current="page"{{ end }}>
+        {{ .Name }}
+    </a>
+{{ end }}

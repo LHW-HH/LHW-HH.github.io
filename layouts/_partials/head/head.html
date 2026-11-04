@@ -42,12 +42,14 @@
 
 {{- partial "head/custom.html" . -}}
 
-{{ $sidebarContactsCSS := resources.Get "css/sidebar-contacts.css" | minify | fingerprint }}
 {{ $pageTransitionsCSS := resources.Get "css/page-transitions.css" | minify | fingerprint }}
+{{ $archivePagesCSS := resources.Get "css/archive-pages.css" | minify | fingerprint }}
 {{ $contactsScript := resources.Get "js/contact-links.js" | minify | fingerprint }}
-<link rel="stylesheet" href="{{ $sidebarContactsCSS.RelPermalink }}" integrity="{{ $sidebarContactsCSS.Data.Integrity }}">
+{{ $archiveMotionScript := resources.Get "js/archive-motion.js" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $pageTransitionsCSS.RelPermalink }}" integrity="{{ $pageTransitionsCSS.Data.Integrity }}">
+<link rel="stylesheet" href="{{ $archivePagesCSS.RelPermalink }}" integrity="{{ $archivePagesCSS.Data.Integrity }}">
 <script defer src="{{ $contactsScript.RelPermalink }}" integrity="{{ $contactsScript.Data.Integrity }}"></script>
+<script defer src="{{ $archiveMotionScript.RelPermalink }}" integrity="{{ $archiveMotionScript.Data.Integrity }}"></script>
 
 {{ partial "cookies/include.html" . }}
 {{ partialCached "footer/components/script.html" . }}

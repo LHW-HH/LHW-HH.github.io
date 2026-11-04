@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.Locale }}" dir="{{ default `ltr` .Language.Direction }}">
+    <head>
+        {{- partial "head/head.html" . -}}
+        {{- block "head" . -}}{{ end }}
+    </head>
+    <body class="archive-shell {{ block `body-class` . }}{{ end }}">
+        {{- partial "head/colorScheme" . -}}
+
+        {{ if not .IsHome }}
+            <header class="archive-header">
+                <div class="archive-header__inner">
+                    <a class="archive-wordmark" href="{{ .Site.Home.RelPermalink }}">
+                        {{ hugo.Data.site.hero.title | default "LHW" }}
+                    </a>
+                    <nav class="archive-nav" aria-label="主导航">
+                        {{ partial "archive/nav-links.html" . }}
+                    </nav>
+                    <details class="archive-mobile-nav">
+                        <summary>菜单</summary>
+                        <nav aria-label="移动端导航">
+                            {{ partial "archive/nav-links.html" . }}
+                        </nav>
+                    </details>
+                </div>
+            </header>
+        {{ end }}
+
+        <main class="archive-main">
+            {{- block "main" . }}{{- end }}
+        </main>
+
+        {{ if not .IsHome }}
+            <footer class="archive-footer">
+                <div class="archive-footer__top">
+                    <a class="archive-footer__name" href="{{ .Site.Home.RelPermalink }}">
+                        {{ hugo.Data.site.hero.title | default "LHW" }}
+                    </a>
+                    <p>{{ hugo.Data.site.footer.description }}</p>
+                </div>
+                <div class="archive-footer__bottom">
+                    <nav aria-label="页脚导航">
+                        {{ partial "archive/nav-links.html" . }}
+                    </nav>
+                    <div class="contact-links archive-footer__contacts" aria-label="联系方式">
+                        {{ with hugo.Data.site.profile.wechat }}
+                            <button type="button" data-copy-value="{{ . }}" data-copy-label="微信" aria-label="复制微信号">
+                                <img src="{{ "icons/wechat.svg" | relURL }}" alt="">
+                            </button>
+                        {{ end }}
+                        {{ with hugo.Data.site.profile.qq }}
+                            <button type="button" data-copy-value="{{ . }}" data-copy-label="QQ" aria-label="复制 QQ 号">
+                                <img src="{{ "icons/qq.svg" | relURL }}" alt="">
+                            </button>
+                        {{ end }}
+                        {{ with hugo.Data.site.profile.github }}
+                            <a href="{{ . }}" target="_blank" rel="me noopener" aria-label="打开 GitHub">
+                                <img src="{{ "icons/github.svg" | relURL }}" alt="">
+                            </a>
+                        {{ end }}
+                        <span class="copy-status" aria-live="polite"></span>
+                    </div>
+                </div>
+            </footer>
+        {{ end }}
+
+        {{ partial "footer/include.html" . }}
+    </body>
+</html>
