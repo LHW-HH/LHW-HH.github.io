@@ -1,5 +1,5 @@
 @echo off
-rem ==== One-click start: Blog preview + Writer (opens both pages) ====
+rem ==== One-click start: blog preview + local writing desk ====
 cd /d %~dp0
 
 rem --- blog preview on port 1313: start only if not already running ---
@@ -11,8 +11,8 @@ if %errorlevel%==0 (
     start "Hugo" /min "%~dp0tools\hugo.exe" server -D --port 1313
 )
 
-rem --- writer on port 1314: start only if not already running ---
-netstat -ano | findstr ":1314 " | findstr "LISTENING" >nul 2>&1
+rem --- writer on port 1315: start only if not already running ---
+netstat -ano | findstr ":1315 " | findstr "LISTENING" >nul 2>&1
 if %errorlevel%==0 (
     echo [Writer] already running, skip
 ) else (
@@ -20,13 +20,13 @@ if %errorlevel%==0 (
     start "Writer" /min powershell -ExecutionPolicy Bypass -File "%~dp0writer.ps1"
 )
 
-rem --- wait for fresh services, then open the blog homepage only ---
+rem --- wait for fresh services, then open the writing desk ---
 timeout /t 3 >nul
-start http://localhost:1313
+start http://127.0.0.1:1315
 
 echo.
-echo Done. Blog homepage opened:
-echo   Blog   : http://localhost:1313   (writer button at bottom-left of page)
-echo   Writer : http://127.0.0.1:1314   (still runs in background)
-echo Close the two minimized black windows to stop services.
+echo Done. Writing desk opened:
+echo   Writer : http://127.0.0.1:1315
+echo   Blog   : http://localhost:1313
+echo Close the two minimized windows to stop the local services.
 pause

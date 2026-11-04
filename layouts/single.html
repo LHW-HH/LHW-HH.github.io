@@ -16,6 +16,9 @@
                     {{ end }}
                 {{ end }}
                 <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年1月2日" }}</time>
+                {{ if and .Lastmod (ne (.Lastmod.Format "2006-01-02") (.Date.Format "2006-01-02")) }}
+                    <span>最后更新 {{ .Lastmod.Format "2006年1月2日" }}</span>
+                {{ end }}
                 <span>阅读时间 {{ .ReadingTime }} 分钟</span>
             </nav>
             <h1 class="archive-article__title">{{ .Title }}</h1>

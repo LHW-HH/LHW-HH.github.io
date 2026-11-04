@@ -1,7 +1,8 @@
 # Hugo 生成物与本地工具不入库
-public/
+/public/
 resources/
 .hugo_build.lock
 tools/
 .writer-uploads/
+.taste-skill/
 Thumbs.db

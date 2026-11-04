@@ -56,6 +56,10 @@ category = 'categories'
 enabled = true
 provider = 'giscus'
 
+# 本地写作台会插入带尺寸与说明的图片、视频块。
+[markup.goldmark.renderer]
+unsafe = true
+
 [params.comments.giscus]
 repo = 'LHW-HH/LHW-HH.github.io'
 repoID = 'R_kgDOVSY4yw'

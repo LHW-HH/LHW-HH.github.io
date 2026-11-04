@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>LHW 写作台</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <header class="appbar">
+    <a class="brand" href="/" aria-label="LHW 写作台首页">
+      <strong>LHW</strong>
+      <span>写作台</span>
+    </a>
+    <nav class="main-nav" aria-label="写作台导航">
+      <button type="button" class="nav-link is-active" data-view="editor">写作</button>
+      <button type="button" class="nav-link" data-view="drafts">草稿 <span class="nav-count" data-count="drafts">0</span></button>
+      <button type="button" class="nav-link" data-view="published">已发布</button>
+      <button type="button" class="nav-link" data-view="media">媒体库</button>
+      <button type="button" class="nav-link" data-view="trash">回收站</button>
+    </nav>
+    <div class="appbar-actions">
+      <span id="save-state" class="save-state" role="status" aria-live="polite">尚未保存</span>
+      <a class="quiet-action" href="http://127.0.0.1:1313/" target="_blank" rel="noopener">查看网站</a>
+      <details class="mobile-menu">
+        <summary aria-label="打开导航">菜单</summary>
+        <nav aria-label="移动端导航">
+          <button type="button" data-view="editor">写作</button>
+          <button type="button" data-view="drafts">草稿</button>
+          <button type="button" data-view="published">已发布</button>
+          <button type="button" data-view="media">媒体库</button>
+          <button type="button" data-view="trash">回收站</button>
+        </nav>
+      </details>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <section id="editor-view" class="view is-active" aria-labelledby="editor-heading">
+      <div class="view-heading">
+        <div>
+          <h1 id="editor-heading">写一篇文章</h1>
+          <p id="editor-context">先写正文，左侧工具栏负责格式和图片。</p>
+        </div>
+        <button type="button" class="text-action" id="new-article">新建文章</button>
+      </div>
+
+      <div class="writer-grid">
+        <article class="writing-surface">
+          <div class="title-fields">
+            <label class="sr-only" for="article-title">文章标题</label>
+            <input id="article-title" class="title-input" type="text" maxlength="120" placeholder="文章标题" autocomplete="off">
+            <label class="sr-only" for="article-summary">文章摘要</label>
+            <input id="article-summary" class="summary-input" type="text" maxlength="220" placeholder="摘要可留空，发布时自动从正文提取" autocomplete="off">
+          </div>
+
+          <div class="format-toolbar" role="toolbar" aria-label="正文格式">
+            <button type="button" data-command="bold" title="粗体（Ctrl+B）"><b>B</b></button>
+            <button type="button" data-command="italic" title="斜体（Ctrl+I）"><i>I</i></button>
+            <button type="button" data-command="formatBlock" data-value="h2" title="二级标题">H2</button>
+            <button type="button" data-command="formatBlock" data-value="h3" title="三级标题">H3</button>
+            <span class="toolbar-sep" aria-hidden="true"></span>
+            <button type="button" data-command="insertUnorderedList" title="无序列表">列表</button>
+            <button type="button" data-command="insertOrderedList" title="有序列表">编号</button>
+            <button type="button" data-command="formatBlock" data-value="blockquote" title="引用">引用</button>
+            <button type="button" data-command="formatBlock" data-value="pre" title="代码块">代码</button>
+            <button type="button" id="insert-link" title="插入链接">链接</button>
+            <span class="toolbar-sep" aria-hidden="true"></span>
+            <button type="button" id="insert-image" title="上传或粘贴图片">图片</button>
+            <button type="button" id="insert-external-image" title="从网络地址插入图片">网络图片</button>
+            <button type="button" id="insert-video" title="插入视频链接">视频</button>
+            <button type="button" id="insert-table" title="插入表格">表格</button>
+            <span class="toolbar-sep" aria-hidden="true"></span>
+            <button type="button" data-command="undo" title="撤销">撤销</button>
+            <button type="button" data-command="redo" title="重做">重做</button>
+          </div>
+
+          <div class="figure-tools" id="figure-tools" hidden>
+            <span>图片</span>
+            <button type="button" data-figure-width="100">正文宽</button>
+            <button type="button" data-figure-width="50">半宽</button>
+            <button type="button" data-figure-width="original">原始尺寸</button>
+            <button type="button" id="toggle-caption">说明文字</button>
+            <button type="button" class="danger-text" id="delete-figure">删除图片</button>
+          </div>
+
+          <div id="article-editor" class="article-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="从这里开始写正文…"></div>
+          <footer class="writing-footer">
+            <span id="word-count">0 字</span>
+            <span>停止输入 2 秒后自动保存</span>
+          </footer>
+        </article>
+
+        <aside class="publish-panel" aria-label="文章设置和发布">
+          <section>
+            <h2>文章设置</h2>
+            <label for="article-category">分类</label>
+            <select id="article-category">
+              <option value="生活随笔">生活随笔</option>
+              <option value="项目进程">项目进程</option>
+              <option value="技术报告">技术报告</option>
+            </select>
+            <label for="article-tags">标签</label>
+            <input id="article-tags" type="text" placeholder="用逗号分隔，可留空" autocomplete="off">
+            <label for="article-slug">文章地址</label>
+            <div class="slug-field">
+              <span>/post/</span>
+              <input id="article-slug" type="text" autocomplete="off">
+            </div>
+          </section>
+
+          <section>
+            <h2>发布检查</h2>
+            <ul class="readiness" id="readiness">
+              <li data-check="title">填写标题</li>
+              <li data-check="category">选择分类</li>
+              <li data-check="body">写正文</li>
+              <li data-check="saved">保存草稿</li>
+            </ul>
+          </section>
+
+          <section class="publish-actions">
+            <button type="button" class="secondary-action" id="save-draft">保存草稿</button>
+            <button type="button" class="secondary-action" id="preview-article">完整预览</button>
+            <button type="button" class="primary-action" id="publish-article">发布文章</button>
+            <p id="publish-status" class="publish-status" aria-live="polite"></p>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section id="drafts-view" class="view list-view" aria-labelledby="drafts-heading" hidden>
+      <div class="view-heading">
+        <div><h1 id="drafts-heading">草稿</h1><p>自动保存的文章会出现在这里。</p></div>
+        <button type="button" class="primary-action" data-new-article>新建文章</button>
+      </div>
+      <div id="drafts-list" class="data-list"></div>
+    </section>
+
+    <section id="published-view" class="view list-view" aria-labelledby="published-heading" hidden>
+      <div class="view-heading">
+        <div><h1 id="published-heading">已发布</h1><p>修改后会保留首次发布日期，并显示最后更新时间。</p></div>
+      </div>
+      <div id="published-list" class="data-list"></div>
+    </section>
+
+    <section id="media-view" class="view list-view" aria-labelledby="media-heading" hidden>
+      <div class="view-heading">
+        <div><h1 id="media-heading">媒体库</h1><p>上传过的图片会保存在本机，可在不同文章间复用。</p></div>
+        <button type="button" class="primary-action" id="library-upload">上传图片</button>
+      </div>
+      <div id="media-grid" class="media-grid"></div>
+    </section>
+
+    <section id="trash-view" class="view list-view" aria-labelledby="trash-heading" hidden>
+      <div class="view-heading">
+        <div><h1 id="trash-heading">回收站</h1><p>内容保留 30 天，可在这里恢复。</p></div>
+      </div>
+      <div id="trash-list" class="data-list"></div>
+    </section>
+  </main>
+
+  <input id="image-file-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple hidden>
+  <input id="library-file-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple hidden>
+
+  <aside id="media-drawer" class="drawer" aria-label="选择媒体库图片" hidden>
+    <header>
+      <div><h2>媒体库</h2><p>点击图片插入当前光标位置。</p></div>
+      <button type="button" class="icon-action" id="close-media-drawer" aria-label="关闭媒体库">关闭</button>
+    </header>
+    <div id="media-drawer-grid" class="media-grid media-grid--drawer"></div>
+  </aside>
+
+  <dialog id="prompt-dialog">
+    <form method="dialog">
+      <h2 id="prompt-title">输入内容</h2>
+      <p id="prompt-description"></p>
+      <label for="prompt-input" id="prompt-label">内容</label>
+      <input id="prompt-input" type="text" autocomplete="off">
+      <div class="dialog-actions">
+        <button value="cancel" class="secondary-action">取消</button>
+        <button value="confirm" class="primary-action">确定</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="confirm-dialog">
+    <form method="dialog">
+      <h2 id="confirm-title">确认操作</h2>
+      <p id="confirm-message"></p>
+      <div class="dialog-actions">
+        <button value="cancel" class="secondary-action">取消</button>
+        <button value="external" class="secondary-action" id="dialog-external" hidden>使用外链</button>
+        <button value="confirm" class="primary-action" id="confirm-button">确认</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="history-dialog">
+    <div class="history-content">
+      <div class="history-heading">
+        <div><h2>版本历史</h2><p id="history-description"></p></div>
+        <button type="button" class="icon-action" id="close-history">关闭</button>
+      </div>
+      <div id="history-list" class="history-list"></div>
+    </div>
+  </dialog>
+
+  <dialog id="preview-dialog" class="preview-dialog">
+    <header>
+      <div><h2>文章预览</h2><p>这是发布后的大致排版，不会写入线上网站。</p></div>
+      <button type="button" class="icon-action" id="close-preview">关闭</button>
+    </header>
+    <iframe id="preview-frame" title="文章完整预览" sandbox="allow-same-origin"></iframe>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="/vendor/marked.umd.js"></script>
+  <script src="/vendor/turndown.js"></script>
+  <script src="/vendor/turndown-plugin-gfm.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

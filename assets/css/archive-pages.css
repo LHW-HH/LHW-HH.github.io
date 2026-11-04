@@ -603,6 +603,53 @@ body:not(.home-world) html::before {
     border-radius: 16px;
 }
 
+.archive-prose figure {
+    width: min(100%, 900px);
+    margin: 2rem auto;
+}
+
+.archive-prose figure.figure--half {
+    width: min(50%, 450px);
+}
+
+.archive-prose figure.figure--original {
+    width: fit-content;
+    max-width: 100%;
+}
+
+.archive-prose figure img {
+    display: block;
+    width: 100%;
+}
+
+.archive-prose figure.figure--original img {
+    width: auto;
+    max-width: 100%;
+}
+
+.archive-prose figcaption {
+    margin-top: 10px;
+    color: var(--archive-muted);
+    font-family: "SF Pro", "Noto Sans CJK SC", "Microsoft YaHei UI", sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.archive-prose video,
+.archive-prose iframe {
+    display: block;
+    width: min(100%, 900px);
+    margin: 2rem auto;
+    border: 0;
+    border-radius: 16px;
+    background: #000;
+}
+
+.archive-prose iframe {
+    aspect-ratio: 16 / 9;
+}
+
 .archive-prose blockquote {
     margin: 2rem 0;
     padding-left: 24px;
@@ -827,6 +874,10 @@ body:not(.home-world) html::before {
 
     .archive-about-hero p {
         grid-column: 1 / -1;
+    }
+
+    .archive-prose figure.figure--half {
+        width: 100%;
     }
 
     .archive-page-heading h1,
