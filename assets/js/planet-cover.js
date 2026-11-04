@@ -193,37 +193,15 @@ function startPlanetCover() {
     async function launchPortal(portal) {
         if (busy) return;
 
-        if (reducedMotion.matches || typeof portal.element.animate !== "function") {
-            window.location.assign(portal.element.href);
-            return;
-        }
-
         busy = true;
-        const rect = portal.element.getBoundingClientRect();
-        const scale = Math.max(window.innerWidth / rect.width, window.innerHeight / rect.height);
-        const translateX = window.innerWidth / 2 - (rect.left + rect.width / 2);
-        const translateY = window.innerHeight / 2 - (rect.top + rect.height / 2);
-
         experience.classList.add("is-navigating");
         portal.element.classList.add("is-launching");
+        portal.element.style.viewTransitionName = "category-portal";
         cursor.classList.remove("is-visible", "is-enter");
 
-        const animation = portal.element.animate(
-            [
-                { transform: "translate3d(0,0,0) scale(1)", offset: 0 },
-                {
-                    transform: `translate3d(${translateX}px,${translateY}px,0) scale(${scale})`,
-                    offset: 1,
-                },
-            ],
-            {
-                duration: 720,
-                easing: "cubic-bezier(.16,1,.3,1)",
-                fill: "forwards",
-            },
-        );
-
-        await animation.finished.catch(() => {});
+        await new Promise((resolve) => {
+            requestAnimationFrame(() => requestAnimationFrame(resolve));
+        });
         window.location.assign(portal.element.href);
     }
 

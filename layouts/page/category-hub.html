@@ -1,3 +1,5 @@
+{{ define "body-class" }}category-page{{ end }}
+
 {{ define "main" }}
     {{ $category := index (where hugo.Data.categories.items "id" .Params.sectionid) 0 }}
     {{ $posts := where site.RegularPages "Section" "post" }}

@@ -1,0 +1,51 @@
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root) {
+    animation: page-fade-out 180ms ease-out both;
+}
+
+::view-transition-new(root) {
+    animation: page-fade-in 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+::view-transition-group(category-portal) {
+    animation-duration: 520ms;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(category-portal),
+::view-transition-new(category-portal) {
+    height: 100%;
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+.category-page .section-card {
+    view-transition-name: category-portal;
+}
+
+@keyframes page-fade-out {
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes page-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root),
+    ::view-transition-group(category-portal) {
+        animation-duration: 0.01ms !important;
+    }
+}

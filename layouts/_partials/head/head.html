@@ -43,8 +43,10 @@
 {{- partial "head/custom.html" . -}}
 
 {{ $sidebarContactsCSS := resources.Get "css/sidebar-contacts.css" | minify | fingerprint }}
+{{ $pageTransitionsCSS := resources.Get "css/page-transitions.css" | minify | fingerprint }}
 {{ $contactsScript := resources.Get "js/contact-links.js" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $sidebarContactsCSS.RelPermalink }}" integrity="{{ $sidebarContactsCSS.Data.Integrity }}">
+<link rel="stylesheet" href="{{ $pageTransitionsCSS.RelPermalink }}" integrity="{{ $pageTransitionsCSS.Data.Integrity }}">
 <script defer src="{{ $contactsScript.RelPermalink }}" integrity="{{ $contactsScript.Data.Integrity }}"></script>
 
 {{ partial "cookies/include.html" . }}
