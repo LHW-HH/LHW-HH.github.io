@@ -1,12 +1,12 @@
 {{ define "main" }}
-    {{ $category := .Params.category }}
+    {{ $category := index (where hugo.Data.categories.items "id" .Params.sectionid) 0 }}
     {{ $posts := where site.RegularPages "Section" "post" }}
 
     <header class="section-card">
         <div class="section-details">
-            <h3 class="section-count">{{ .Params.channel }}</h3>
-            <h1 class="section-term">{{ .Title }}</h1>
-            {{ with .Params.description }}
+            <h3 class="section-count">{{ $category.channel }}</h3>
+            <h1 class="section-term">{{ $category.name }}</h1>
+            {{ with $category.description }}
                 <h2 class="section-description">{{ . }}</h2>
             {{ end }}
         </div>
@@ -15,7 +15,7 @@
     <section class="article-list--compact">
         {{ $found := false }}
         {{ range $posts.ByDate.Reverse }}
-            {{ if in .Params.categories $category }}
+            {{ if in .Params.categories $category.category }}
                 {{ $found = true }}
                 {{ partial "article-list/compact" . }}
             {{ end }}

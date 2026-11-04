@@ -1,0 +1,38 @@
+# 三个首页入口与分类页共享这份配置。
+# media_type 可填 video 或 image；media 可填远程 URL 或 /icons/xxx 这样的站内路径。
+items:
+  - id: life
+    name: 生活随笔
+    nav_name: 生活随笔
+    description: 日常现场、阶段感受，以及还没有答案的问题。
+    portal_caption: 日常与思考
+    channel: 生活轨道
+    category: 生活随笔
+    href: /life/
+    media_type: video
+    media: https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/fc3ded42-e845-41f3-a830-5cab512d79cd.mp4
+    poster: ""
+
+  - id: projects
+    name: 项目进程
+    nav_name: 项目进程
+    description: 从想法到上线，保留决策、问题与下一步推进。
+    portal_caption: 从想法到上线
+    channel: 项目轨道
+    category: 项目进程
+    href: /projects/
+    media_type: video
+    media: https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/5fc5651c-3b5d-4171-b507-87f7e635d1b4.mp4
+    poster: ""
+
+  - id: tech
+    name: 技术报告
+    nav_name: 技术报告
+    description: 技术学习、工具实践，以及可以复用的方法和结论。
+    portal_caption: 方法与结论
+    channel: 技术轨道
+    category: 技术报告
+    href: /tech/
+    media_type: video
+    media: https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/b30f64d9-1637-477a-83df-d0fc6461a422.mp4
+    poster: ""

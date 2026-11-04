@@ -1,12 +1,3 @@
-const planets = ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"];
-
-const marsFacts = [
-    ["Distance:", "About 228 million km (1.5 astronomical units)."],
-    ["Year:", "One Martian year is equal to 687 Earth days."],
-    ["Temperature:", "Around -60 °C, dropping to -125 °C at the poles in winter."],
-    ["Atmosphere:", "Very thin, consisting of 95% carbon dioxide, with frequent dust storms."],
-];
-
 const experience = document.querySelector(".planet-cover");
 
 if (experience) {
@@ -18,9 +9,8 @@ function startPlanetCover() {
     const preloaderVideo = experience.querySelector("#preloader-video");
     const preloaderCount = experience.querySelector("#preloader-count");
     const preloaderValue = experience.querySelector("#preloader-value");
+    const preloaderSkip = experience.querySelector("#preloader-skip");
     const floatingLogo = experience.querySelector("#floating-logo");
-    const facts = experience.querySelector("#facts");
-    const planetList = experience.querySelector(".planet-list");
     const backgroundVideo = experience.querySelector(".background");
     const cursor = experience.querySelector(".custom-cursor");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -28,7 +18,7 @@ function startPlanetCover() {
     const portals = [...experience.querySelectorAll(".category-portal")].map((element) => ({
         element,
         canvas: element.querySelector(".category-portal__canvas"),
-        video: element.querySelector(".category-portal__video"),
+        media: element.querySelector(".category-portal__media"),
         rotationX: 0,
         rotationY: 0,
         targetX: 0,
@@ -49,6 +39,7 @@ function startPlanetCover() {
     });
 
     function mediaSize(media) {
+        if (!media) return { width: 0, height: 0 };
         return {
             width: media.videoWidth || media.naturalWidth || 0,
             height: media.videoHeight || media.naturalHeight || 0,
@@ -143,7 +134,7 @@ function startPlanetCover() {
         context.clip();
         context.fillStyle = "#17110f";
         context.fillRect(0, 0, width, height);
-        drawCover(context, portal.video, width, height);
+        drawCover(context, portal.media, width, height);
 
         const gradient = context.createLinearGradient(0, height * 0.5, 0, height);
         gradient.addColorStop(0, "rgba(0,0,0,0)");
@@ -153,41 +144,23 @@ function startPlanetCover() {
         context.restore();
     }
 
-    function renderStaticContent() {
-        facts.replaceChildren();
-        marsFacts.forEach(([key, value]) => {
-            const fact = document.createElement("div");
-            const term = document.createElement("dt");
-            const description = document.createElement("dd");
-            fact.className = "fact";
-            term.textContent = key;
-            description.textContent = value;
-            fact.append(term, description);
-            facts.append(fact);
-        });
-
-        planetList.replaceChildren();
-        planets.forEach((planet) => {
-            const item = document.createElement("span");
-            item.className = `planet-item${planet === "Mars" ? " active" : ""}`;
-            item.textContent = planet;
-            planetList.append(item);
-        });
-    }
-
     function setupPortals() {
         portals.forEach((portal) => {
-            portal.video.src = portal.element.dataset.video;
-            portal.video.playsInline = true;
-            portal.video.muted = true;
-            portal.video.load();
-
-            portal.video.addEventListener("loadedmetadata", () => {
+            if (!portal.media) {
                 resizePortal(portal);
-                if (!reducedMotion.matches) {
-                    portal.video.play().catch(() => {});
-                }
-            }, { once: true });
+            } else if (portal.media instanceof HTMLVideoElement) {
+                portal.media.playsInline = true;
+                portal.media.muted = true;
+                portal.media.load();
+                portal.media.addEventListener("loadedmetadata", () => {
+                    resizePortal(portal);
+                    if (!reducedMotion.matches) {
+                        portal.media.play().catch(() => {});
+                    }
+                }, { once: true });
+            } else {
+                portal.media.addEventListener("load", () => resizePortal(portal), { once: true });
+            }
 
             const resizeObserver = new ResizeObserver(() => resizePortal(portal));
             resizeObserver.observe(portal.element);
@@ -295,19 +268,36 @@ function startPlanetCover() {
 
     async function startExperience() {
         const mediaReady = portals.map((portal) => new Promise((resolve) => {
-            if (portal.video.readyState >= 2) {
+            if (!portal.media) {
+                resolve();
+                return;
+            }
+            if (!(portal.media instanceof HTMLVideoElement)) {
+                if (portal.media.complete) {
+                    resolve();
+                } else {
+                    portal.media.addEventListener("load", resolve, { once: true });
+                    portal.media.addEventListener("error", resolve, { once: true });
+                }
+                return;
+            }
+            if (portal.media.readyState >= 2) {
                 resolve();
                 return;
             }
             const finish = () => resolve();
-            portal.video.addEventListener("loadeddata", finish, { once: true });
-            portal.video.addEventListener("error", finish, { once: true });
+            portal.media.addEventListener("loadeddata", finish, { once: true });
+            portal.media.addEventListener("error", finish, { once: true });
             window.setTimeout(finish, 1800);
         }));
 
         await Promise.all(mediaReady);
         if (!reducedMotion.matches) {
-            portals.forEach((portal) => portal.video.play().catch(() => {}));
+            portals.forEach((portal) => {
+                if (portal.media instanceof HTMLVideoElement) {
+                    portal.media.play().catch(() => {});
+                }
+            });
         }
         restartClass(experience, "mask-revealing");
         experience.classList.add("intro-ready");
@@ -318,8 +308,14 @@ function startPlanetCover() {
     function finishPreload() {
         if (preloaderFinished) return;
         preloaderFinished = true;
+        try {
+            window.sessionStorage.setItem("lhw-intro-seen", "1");
+        } catch (error) {
+            // Storage may be unavailable in privacy-focused browser modes.
+        }
         preloaderValue.textContent = "100";
         preloaderCount.classList.add("is-leaving");
+        preloaderSkip.hidden = true;
         floatingLogo.classList.add("is-docked");
         preloader.classList.add("is-background");
         document.body.classList.add("preload-complete");
@@ -331,6 +327,28 @@ function startPlanetCover() {
     }
 
     function runPreloader() {
+        let introSeen = false;
+        try {
+            introSeen = window.sessionStorage.getItem("lhw-intro-seen") === "1";
+        } catch (error) {
+            introSeen = false;
+        }
+
+        if (introSeen) {
+            preloaderVideo.pause();
+            preloader.classList.add("is-background");
+            preloaderCount.remove();
+            preloaderSkip.remove();
+            floatingLogo.classList.add("is-docked", "is-settled");
+            document.body.classList.add("preload-complete");
+            startExperience().catch(() => {
+                experience.classList.add("intro-ready", "mask-revealing", "content-revealing");
+            });
+            return;
+        }
+
+        preloaderSkip.addEventListener("click", finishPreload);
+
         if (reducedMotion.matches) {
             preloaderVideo.pause();
             window.setTimeout(finishPreload, 250);
@@ -365,7 +383,6 @@ function startPlanetCover() {
         requestAnimationFrame(updateCounter);
     }
 
-    renderStaticContent();
     setupPortals();
     backgroundVideo.muted = true;
     preloaderVideo.muted = true;
@@ -379,10 +396,11 @@ function startPlanetCover() {
         running = !document.hidden;
         previousFrame = performance.now();
         portals.forEach((portal) => {
+            if (!portal.media || !(portal.media instanceof HTMLVideoElement)) return;
             if (document.hidden || reducedMotion.matches) {
-                portal.video.pause();
+                portal.media.pause();
             } else {
-                portal.video.play().catch(() => {});
+                portal.media.play().catch(() => {});
             }
         });
         if (running) {

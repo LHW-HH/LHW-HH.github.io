@@ -21,7 +21,7 @@ All media uses the exact CloudFront URLs supplied in the approved brief:
 - Mars background and introduction video
 - Earth and Venus transition videos
 - Mercury still image
-- Floating logo
+- Floating LHW wordmark
 
 The page uses local font fallbacks and no JavaScript framework.
 

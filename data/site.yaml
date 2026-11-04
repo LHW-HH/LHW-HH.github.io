@@ -1,0 +1,25 @@
+# 首页与个人信息。留空的字段不会显示。
+hero:
+  title: LHW
+  portal_heading: 选择一条轨道
+  enter_label: 进入博客
+  facts:
+    - label: 身份
+      value: LHW 的个人档案
+    - label: 记录
+      value: 生活随笔、技术报告、项目进程
+    - label: 读者
+      value: 朋友、同学与技术同行
+    - label: 联系
+      value: 微信、QQ、GitHub
+
+profile:
+  # 填写后会自动显示在“关于”页。
+  school: ""
+  birthday: ""
+  wechat: ""
+  qq: ""
+  github: https://github.com/LHW-HH
+
+footer:
+  description: LHW 的个人档案，记录生活、技术与正在成形的东西。
