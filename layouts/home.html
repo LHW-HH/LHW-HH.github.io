@@ -3,14 +3,12 @@
 {{ define "head" }}
     {{ $homeCSS := resources.Get "css/home-world.css" | minify | fingerprint }}
     {{ $coverCSS := resources.Get "css/planet-cover.css" | minify | fingerprint }}
-    {{ $contactsScript := resources.Get "js/contact-links.js" | minify | fingerprint }}
     <link rel="stylesheet" href="{{ $homeCSS.RelPermalink }}" integrity="{{ $homeCSS.Data.Integrity }}">
     <link rel="stylesheet" href="{{ $coverCSS.RelPermalink }}" integrity="{{ $coverCSS.Data.Integrity }}">
     <link rel="preconnect" href="https://d2ol7oe51mr4n9.cloudfront.net" crossorigin>
 
     {{ $coverScript := resources.Get "js/planet-cover.js" | minify | fingerprint }}
     <script type="module" src="{{ $coverScript.RelPermalink }}" integrity="{{ $coverScript.Data.Integrity }}"></script>
-    <script defer src="{{ $contactsScript.RelPermalink }}" integrity="{{ $contactsScript.Data.Integrity }}"></script>
 {{ end }}
 
 {{ define "left-sidebar" }}{{ end }}

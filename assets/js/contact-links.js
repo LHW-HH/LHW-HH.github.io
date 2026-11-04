@@ -21,7 +21,8 @@
 
     copyButtons.forEach((button) => {
         button.addEventListener("click", async () => {
-            const status = button.closest(".contact-links")?.querySelector(".copy-status");
+            const status = button.closest(".contact-links")?.querySelector(".copy-status")
+                || button.closest(".sidebar-contacts")?.querySelector(".sidebar-copy-status");
             try {
                 await copyValue(button.dataset.copyValue);
                 if (status) status.textContent = `已复制${button.dataset.copyLabel}`;

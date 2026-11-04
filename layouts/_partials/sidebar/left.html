@@ -29,15 +29,37 @@
         </div>
     </header>
 
-    {{- with hugo.Data.site.profile.github -}}
-        <ol class="menu-social">
-            <li>
-                <a href="{{ . }}" target="_blank" title="GitHub" rel="me">
-                    {{ partial "helper/icon" "brand-github" }}
-                </a>
-            </li>
-        </ol>
-    {{- end -}}
+    {{ $profile := hugo.Data.site.profile }}
+    {{ if or $profile.wechat $profile.qq $profile.github }}
+        <div class="sidebar-contacts">
+            <ol class="menu-social" aria-label="联系方式">
+                {{ with $profile.wechat }}
+                    <li>
+                        <button class="sidebar-contact-button" type="button"
+                            data-copy-value="{{ . }}" data-copy-label="微信" aria-label="复制微信号" title="复制微信号">
+                            <img src="{{ "icons/wechat.svg" | relURL }}" alt="">
+                        </button>
+                    </li>
+                {{ end }}
+                {{ with $profile.qq }}
+                    <li>
+                        <button class="sidebar-contact-button" type="button"
+                            data-copy-value="{{ . }}" data-copy-label="QQ" aria-label="复制 QQ 号" title="复制 QQ 号">
+                            <img src="{{ "icons/qq.svg" | relURL }}" alt="">
+                        </button>
+                    </li>
+                {{ end }}
+                {{ with $profile.github }}
+                    <li>
+                        <a href="{{ . }}" target="_blank" title="GitHub" rel="me" aria-label="打开 GitHub">
+                            {{ partial "helper/icon" "brand-github" }}
+                        </a>
+                    </li>
+                {{ end }}
+            </ol>
+            <span class="sidebar-copy-status" aria-live="polite"></span>
+        </div>
+    {{ end }}
 
     <ol class="menu" id="main-menu">
         {{ $currentPage := . }}

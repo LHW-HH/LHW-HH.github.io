@@ -2,9 +2,7 @@
 
 {{ define "head" }}
     {{ $aboutCSS := resources.Get "css/about.css" | minify | fingerprint }}
-    {{ $contactsScript := resources.Get "js/contact-links.js" | minify | fingerprint }}
     <link rel="stylesheet" href="{{ $aboutCSS.RelPermalink }}" integrity="{{ $aboutCSS.Data.Integrity }}">
-    <script defer src="{{ $contactsScript.RelPermalink }}" integrity="{{ $contactsScript.Data.Integrity }}"></script>
 {{ end }}
 
 {{ define "main" }}
