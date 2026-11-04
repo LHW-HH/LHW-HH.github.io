@@ -18,7 +18,7 @@ name = 'LHW'
 # 侧边栏：头像 + 一句话介绍
 [params.sidebar]
 compact = false
-avatar = 'img/avatar.svg'
+avatar = 'img/avatar.jpg'
 subtitle = '一些记录，一些总结'
 
 # 顶部菜单：关于、归档与搜索。内容分类统一读取 data/categories.yaml。
