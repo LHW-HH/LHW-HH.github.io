@@ -10,9 +10,17 @@
         {{ if not .IsHome }}
             <header class="archive-header">
                 <div class="archive-header__inner">
-                    <a class="archive-wordmark" href="{{ .Site.Home.RelPermalink }}">
-                        {{ hugo.Data.site.hero.title | default "LHW" }}
-                    </a>
+                    <div class="archive-brand-lockup">
+                        <a class="archive-wordmark" href="{{ .Site.Home.RelPermalink }}">
+                            {{ hugo.Data.site.hero.title | default "LHW" }}
+                        </a>
+                        <a class="archive-home-button" href="{{ .Site.Home.RelPermalink }}" aria-label="返回首页">
+                            <svg aria-hidden="true" viewBox="0 0 16 16" width="14" height="14">
+                                <path d="M10.5 3 5.5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>返回首页</span>
+                        </a>
+                    </div>
                     <nav class="archive-nav" aria-label="主导航">
                         {{ partial "archive/nav-links.html" . }}
                     </nav>
