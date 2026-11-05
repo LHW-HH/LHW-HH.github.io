@@ -203,6 +203,9 @@ function startPlanetCover() {
     }
 
     async function launchPortal(portal) {
+        if (busy && (experience.classList.contains("is-bfcache-restored") || !experience.classList.contains("is-navigating"))) {
+            busy = false;
+        }
         if (busy) return;
 
         busy = true;
