@@ -655,6 +655,17 @@
     animation-delay: 180ms;
 }
 
+.planet-cover.is-bfcache-restored .header,
+.planet-cover.is-bfcache-restored .portal-heading,
+.planet-cover.is-bfcache-restored .category-portal,
+.planet-cover.is-bfcache-restored .planet-content h1,
+.planet-cover.is-bfcache-restored .planet-content .fact,
+.planet-cover.is-bfcache-restored .planet-content .contact-links {
+    opacity: 1 !important;
+    filter: none !important;
+    animation: none !important;
+}
+
 .planet-cover .planet-list.is-switching .planet-item {
     animation: planet-menu-row 580ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }

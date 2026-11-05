@@ -15,6 +15,12 @@ function startPlanetCover() {
     const cursor = experience.querySelector(".custom-cursor");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const coarsePointer = window.matchMedia("(pointer: coarse)");
+    let returningHome = false;
+    try {
+        returningHome = window.sessionStorage.getItem("lhw-home-returning") === "1";
+    } catch (error) {
+        returningHome = false;
+    }
     const portals = [...experience.querySelectorAll(".category-portal")].map((element) => ({
         element,
         canvas: element.querySelector(".category-portal__canvas"),
@@ -28,6 +34,7 @@ function startPlanetCover() {
     let preloaderFinished = false;
     let running = true;
     let busy = false;
+    let historyRestored = false;
     let previousFrame = performance.now();
     let cursorX = window.innerWidth / 2;
     let cursorY = window.innerHeight / 2;
@@ -305,6 +312,11 @@ function startPlanetCover() {
     }
 
     function runPreloader() {
+        if (returningHome) {
+            restoreFromHistory(true);
+            return;
+        }
+
         let introSeen = false;
         try {
             introSeen = window.sessionStorage.getItem("lhw-intro-seen") === "1";
@@ -361,6 +373,47 @@ function startPlanetCover() {
         requestAnimationFrame(updateCounter);
     }
 
+    function restoreFromHistory(force = false) {
+        if (historyRestored) return;
+        if (!force && !document.body.classList.contains("preload-complete")) return;
+
+        historyRestored = true;
+        try {
+            window.sessionStorage.removeItem("lhw-home-returning");
+        } catch (error) {
+            // Ignore unavailable storage.
+        }
+        busy = false;
+        running = true;
+        previousFrame = performance.now();
+
+        experience.classList.remove("is-navigating");
+        experience.classList.add("intro-ready", "mask-revealing", "content-revealing", "is-bfcache-restored");
+        preloader.classList.add("is-background");
+        preloaderCount.remove();
+        preloaderSkip.remove();
+        floatingLogo.classList.add("is-docked", "is-settled");
+        document.body.classList.add("preload-complete");
+
+        portals.forEach((portal) => {
+            portal.element.classList.remove("is-launching");
+            portal.element.style.viewTransitionName = "";
+            portal.targetX = 0;
+            portal.targetY = 0;
+            if (!reducedMotion.matches && portal.media instanceof HTMLVideoElement) {
+                portal.media.play().catch(() => {});
+            }
+        });
+
+        if (!reducedMotion.matches) {
+            backgroundVideo.play().catch(() => {});
+        }
+
+        window.scrollTo(0, 0);
+        requestAnimationFrame(draw);
+        requestAnimationFrame(cursorLoop);
+    }
+
     setupPortals();
     backgroundVideo.muted = true;
     preloaderVideo.muted = true;
@@ -385,6 +438,21 @@ function startPlanetCover() {
             requestAnimationFrame(draw);
             requestAnimationFrame(cursorLoop);
         }
+    });
+    window.addEventListener("pageshow", restoreFromHistory);
+    window.addEventListener("popstate", restoreFromHistory);
+    window.addEventListener("pagehide", () => {
+        try {
+            window.sessionStorage.setItem("lhw-home-returning", "1");
+        } catch (error) {
+            // Continue without storage in privacy-focused browser modes.
+        }
+        experience.classList.remove("is-navigating");
+        portals.forEach((portal) => {
+            portal.element.classList.remove("is-launching");
+            portal.element.style.viewTransitionName = "";
+        });
+        experience.classList.add("intro-ready", "mask-revealing", "content-revealing", "is-bfcache-restored");
     });
 
     requestAnimationFrame(draw);

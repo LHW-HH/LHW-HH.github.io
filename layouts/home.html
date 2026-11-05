@@ -8,6 +8,41 @@
     <link rel="preconnect" href="https://d2ol7oe51mr4n9.cloudfront.net" crossorigin>
 
     {{ $coverScript := resources.Get "js/planet-cover.js" | minify | fingerprint }}
+    <script>
+        (() => {
+            function restoreHome() {
+                if (!document.body.classList.contains("preload-complete")) return;
+                const experience = document.querySelector(".planet-cover");
+                if (!experience || experience.classList.contains("is-bfcache-restored")) return;
+                experience.classList.remove("is-navigating");
+                experience.classList.add("intro-ready", "mask-revealing", "content-revealing", "is-bfcache-restored");
+                document.querySelectorAll(".category-portal").forEach((portal) => {
+                    portal.classList.remove("is-launching");
+                    portal.style.viewTransitionName = "";
+                });
+                window.scrollTo(0, 0);
+            }
+            function prepareHomeSnapshot() {
+                try {
+                    window.sessionStorage.setItem("lhw-home-returning", "1");
+                } catch (error) {
+                    // Continue without storage in privacy-focused browser modes.
+                }
+                const experience = document.querySelector(".planet-cover");
+                if (!experience || !document.body.classList.contains("preload-complete")) return;
+                experience.classList.remove("is-navigating");
+                experience.classList.add("intro-ready", "mask-revealing", "content-revealing", "is-bfcache-restored");
+                document.querySelectorAll(".category-portal").forEach((portal) => {
+                    portal.classList.remove("is-launching");
+                    portal.style.viewTransitionName = "";
+                });
+            }
+            window.addEventListener("pageshow", restoreHome);
+            window.addEventListener("popstate", restoreHome);
+            window.addEventListener("pagehide", prepareHomeSnapshot);
+            window.addEventListener("unload", () => {});
+        })();
+    </script>
     <script type="module" src="{{ $coverScript.RelPermalink }}" integrity="{{ $coverScript.Data.Integrity }}"></script>
 {{ end }}
 
