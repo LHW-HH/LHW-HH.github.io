@@ -25,6 +25,7 @@ function startPlanetCover() {
         element,
         canvas: element.querySelector(".category-portal__canvas"),
         media: element.querySelector(".category-portal__media"),
+        poster: element.querySelector(".category-portal__poster"),
         rotationX: 0,
         rotationY: 0,
         targetX: 0,
@@ -141,7 +142,11 @@ function startPlanetCover() {
         context.clip();
         context.fillStyle = "#17110f";
         context.fillRect(0, 0, width, height);
-        drawCover(context, portal.media, width, height);
+        if (mediaSize(portal.media).width) {
+            drawCover(context, portal.media, width, height);
+        } else {
+            drawCover(context, portal.poster, width, height);
+        }
 
         const gradient = context.createLinearGradient(0, height * 0.5, 0, height);
         gradient.addColorStop(0, "rgba(0,0,0,0)");

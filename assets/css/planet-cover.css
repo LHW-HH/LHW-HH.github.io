@@ -263,6 +263,14 @@
     pointer-events: none;
 }
 
+.planet-cover .category-portal__poster {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    visibility: hidden;
+    pointer-events: none;
+}
+
 .planet-cover .category-portal__label {
     position: absolute;
     right: 0;

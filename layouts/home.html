@@ -103,6 +103,7 @@
                         {{ else if .media }}
                             <video class="category-portal__media" src="{{ .media }}" muted playsinline preload="metadata"
                                 {{ with .poster }}poster="{{ . }}"{{ end }}></video>
+                            {{ with .poster }}<img class="category-portal__poster" src="{{ . }}" alt="" loading="eager">{{ end }}
                         {{ end }}
                         <span class="category-portal__label">
                             <strong>{{ .name }}</strong>
