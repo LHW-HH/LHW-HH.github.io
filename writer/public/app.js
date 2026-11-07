@@ -350,7 +350,7 @@
     if (state.dirty) await saveDraft({ silent: true }).catch(() => {});
     const article = await api(`/api/articles/${encodeURIComponent(slug)}`);
     state.draftId = null;
-    state.editingSlug = article.slug;
+    state.editingSlug = article.slug || null;
     state.createdAt = article.date;
     state.dirty = false;
     state.revision = 0;
@@ -359,7 +359,7 @@
     summaryInput.value = article.description || "";
     categoryInput.value = article.categories?.[0] || "生活随笔";
     tagsInput.value = (article.tags || []).join(", ");
-    slugInput.value = article.slug;
+    slugInput.value = article.slug || "";
     editor.innerHTML = marked.parse(article.markdown || "");
     renderRelativeImages(article.slug);
     $("#editor-context").textContent = `已发布 · ${formatDate(article.date)}`;

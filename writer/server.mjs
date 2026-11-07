@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import { createHash, randomUUID } from "node:crypto";
 import { spawn } from "node:child_process";
+import { connect } from "node:net";
 import { createReadStream, existsSync } from "node:fs";
 import {
   copyFile,
@@ -339,7 +340,7 @@ async function listArticles() {
 }
 
 async function readArticle(slug) {
-  const { clean, file } = await articleFile(slug);
+  const { slug: clean, file } = await articleFile(slug);
   const source = await readFile(file, "utf8").catch(() => "");
   if (!source) throw new HttpError(404, "没有找到这篇文章。");
   const parsed = parseFrontMatter(source);
@@ -591,22 +592,56 @@ async function validateHugo() {
   }
 }
 
-async function systemProxy() {
-  if (process.platform !== "win32") return null;
-  try {
-    const result = await run("reg", [
-      "query",
-      "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
-    ], { timeout: 10000 });
-    if (result.code !== 0) return null;
-    if (!/ProxyEnable\s+REG_DWORD\s+0x1/i.test(result.stdout)) return null;
-    const match = result.stdout.match(/ProxyServer\s+REG_SZ\s+(\S+)/i);
-    if (!match) return null;
-    const value = match[1].trim();
-    return value.includes("=") ? null : value;
-  } catch {
-    return null;
+function canConnect(host, port, timeout = 400) {
+  return new Promise((resolvePromise) => {
+    const socket = connect({ host, port });
+    const finish = (ok) => {
+      socket.destroy();
+      resolvePromise(ok);
+    };
+    socket.setTimeout(timeout, () => finish(false));
+    socket.once("connect", () => finish(true));
+    socket.once("error", () => finish(false));
+  });
+}
+
+const PROXY_PORTS = [21827, 7897, 7890, 7891, 10809, 10808, 1080, 2080];
+
+async function pushWithFallbacks() {
+  const attempts = [
+    {
+      label: "direct",
+      timeout: 45000,
+      args: ["-c", "http.lowSpeedLimit=1000", "-c", "http.lowSpeedTime=20", "push", "origin", "main"]
+    }
+  ];
+  for (const port of PROXY_PORTS) {
+    if (!(await canConnect("127.0.0.1", port))) continue;
+    const proxy = `http://127.0.0.1:${port}`;
+    attempts.push({
+      label: `proxy ${port}`,
+      timeout: 120000,
+      args: [
+        "-c", `http.proxy=${proxy}`,
+        "-c", `https.proxy=${proxy}`,
+        "-c", "http.lowSpeedLimit=1000",
+        "-c", "http.lowSpeedTime=20",
+        "push", "origin", "main"
+      ]
+    });
   }
+  attempts.push({
+    label: "ssh",
+    timeout: 45000,
+    args: ["push", "ssh://git@ssh.github.com:443/LHW-HH/LHW-HH.github.io.git", "main"]
+  });
+
+  let last = null;
+  for (const attempt of attempts) {
+    last = await git(attempt.args, attempt.timeout);
+    if (last.code === 0) return { ok: true, via: attempt.label };
+  }
+  return { ok: false, stdout: last?.stdout || "", stderr: last?.stderr || "" };
 }
 
 async function git(args, timeout = 120000) {
@@ -634,20 +669,9 @@ async function publishGit(article) {
     return { pushed: false, message: "内容没有变化，无需再次发布。", runId: null };
   }
 
-  const proxy = await systemProxy();
-  const pushArgs = proxy
-    ? ["-c", `http.proxy=http://${proxy}`, "-c", `https.proxy=http://${proxy}`, "push", "origin", "main"]
-    : ["push", "origin", "main"];
-  let push = await git(pushArgs);
-  if (push.code !== 0) {
-    push = await git([
-      "push",
-      "ssh://git@ssh.github.com:443/LHW-HH/LHW-HH.github.io.git",
-      "main"
-    ]);
-  }
-  if (push.code !== 0) {
-    throw new Error(push.stderr || push.stdout || "Git push 失败");
+  const pushed = await pushWithFallbacks();
+  if (!pushed.ok) {
+    throw new Error(pushed.stderr || pushed.stdout || "Git push 失败");
   }
 
   const latest = await run("gh", [
