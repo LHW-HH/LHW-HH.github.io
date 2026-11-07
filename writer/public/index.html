@@ -185,6 +185,25 @@
     </form>
   </dialog>
 
+  <dialog id="table-dialog">
+    <form method="dialog">
+      <h2>插入表格</h2>
+      <p>设置行列数，首行作为表头。</p>
+      <div class="table-dialog-grid">
+        <label for="table-rows">行数
+          <input id="table-rows" type="number" min="2" max="30" value="3" inputmode="numeric">
+        </label>
+        <label for="table-cols">列数
+          <input id="table-cols" type="number" min="1" max="12" value="3" inputmode="numeric">
+        </label>
+      </div>
+      <div class="dialog-actions">
+        <button value="cancel" class="secondary-action">取消</button>
+        <button value="confirm" class="primary-action">插入</button>
+      </div>
+    </form>
+  </dialog>
+
   <dialog id="confirm-dialog">
     <form method="dialog">
       <h2 id="confirm-title">确认操作</h2>

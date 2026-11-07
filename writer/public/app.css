@@ -1201,3 +1201,18 @@ dialog input {
     animation-duration: 0.01ms !important;
   }
 }
+
+
+.table-dialog-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.table-dialog-grid label {
+  margin-bottom: 0;
+}
+
+.table-dialog-grid input {
+  margin-top: 7px;
+}

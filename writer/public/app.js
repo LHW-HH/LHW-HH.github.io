@@ -20,6 +20,7 @@
   const mediaDrawerGrid = $("#media-drawer-grid");
   const promptDialog = $("#prompt-dialog");
   const confirmDialog = $("#confirm-dialog");
+  const tableDialog = $("#table-dialog");
   const historyDialog = $("#history-dialog");
   const previewDialog = $("#preview-dialog");
   const previewFrame = $("#preview-frame");
@@ -971,8 +972,54 @@ main{width:min(1040px,calc(100% - 40px));margin:0 auto;padding:64px 0 100px}
     });
   }
 
+  function buildTableHtml(rows, cols) {
+    const header = Array.from({ length: cols }, (_, index) => `<th>列${index + 1}</th>`).join("");
+    const bodyRow = `<tr>${Array.from({ length: cols }, () => "<td>内容</td>").join("")}</tr>`;
+    const body = Array.from({ length: Math.max(0, rows - 1) }, () => bodyRow).join("");
+    return `<table><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table><p><br></p>`;
+  }
+
   function insertTable() {
-    insertHtml(`<table><thead><tr><th>列一</th><th>列二</th></tr></thead><tbody><tr><td>内容</td><td>内容</td></tr><tr><td>内容</td><td>内容</td></tr></tbody></table><p><br></p>`);
+    saveSelection();
+    const rowsInput = $("#table-rows");
+    const colsInput = $("#table-cols");
+    tableDialog.showModal();
+    setTimeout(() => rowsInput.focus(), 0);
+    tableDialog.addEventListener("close", () => {
+      if (tableDialog.returnValue !== "confirm") return;
+      const rows = Math.min(30, Math.max(2, parseInt(rowsInput.value, 10) || 3));
+      const cols = Math.min(12, Math.max(1, parseInt(colsInput.value, 10) || 3));
+      insertHtml(buildTableHtml(rows, cols));
+    }, { once: true });
+  }
+
+  function getCaretElement() {
+    const selection = window.getSelection();
+    if (!selection || !selection.anchorNode) return null;
+    return selection.anchorNode.nodeType === 1
+      ? selection.anchorNode
+      : selection.anchorNode.parentElement;
+  }
+
+  function placeCaretAtEnd(element) {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    range.collapse(false);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
+  function appendTableRow(row) {
+    const newRow = document.createElement("tr");
+    const columns = row.children.length;
+    for (let index = 0; index < columns; index += 1) {
+      const cell = document.createElement("td");
+      cell.textContent = "内容";
+      newRow.append(cell);
+    }
+    row.parentElement.append(newRow);
+    return newRow;
   }
 
   function setFigureWidth(mode) {
@@ -1069,6 +1116,28 @@ main{width:min(1040px,calc(100% - 40px));margin:0 auto;padding:64px 0 100px}
     });
 
     editor.addEventListener("keydown", (event) => {
+      if (event.key === "Tab" && !event.ctrlKey && !event.metaKey) {
+        const caret = getCaretElement();
+        const cell = caret ? caret.closest("td, th") : null;
+        if (cell) {
+          event.preventDefault();
+          const table = cell.closest("table");
+          const rowsList = Array.from(table.querySelectorAll("tr"));
+          const cells = rowsList.flatMap((row) => Array.from(row.children));
+          const row = cell.parentElement;
+          const lastRow = rowsList[rowsList.length - 1];
+          if (!event.shiftKey && row === lastRow && cell === row.lastElementChild) {
+            const newRow = appendTableRow(row);
+            placeCaretAtEnd(newRow.firstElementChild);
+            markDirty();
+            return;
+          }
+          const currentIndex = cells.indexOf(cell);
+          const nextIndex = Math.min(cells.length - 1, Math.max(0, currentIndex + (event.shiftKey ? -1 : 1)));
+          placeCaretAtEnd(cells[nextIndex]);
+          return;
+        }
+      }
       if (!(event.ctrlKey || event.metaKey)) return;
       if (event.key === "s") {
         event.preventDefault();
