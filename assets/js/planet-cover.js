@@ -422,6 +422,28 @@ function startPlanetCover() {
         requestAnimationFrame(cursorLoop);
     }
 
+    function attemptPlayback() {
+        if (reducedMotion.matches) return;
+        backgroundVideo.play().catch(() => {});
+        portals.forEach((portal) => {
+            if (portal.media instanceof HTMLVideoElement) {
+                portal.media.play().catch(() => {});
+            }
+        });
+    }
+
+    function armMobilePlayback() {
+        if (!coarsePointer.matches || reducedMotion.matches) return;
+        const types = ["touchstart", "touchend", "click", "keydown"];
+        const unlock = () => {
+            types.forEach((type) => window.removeEventListener(type, unlock));
+            attemptPlayback();
+        };
+        types.forEach((type) => {
+            window.addEventListener(type, unlock, { once: true, passive: true });
+        });
+    }
+
     setupPortals();
     backgroundVideo.muted = true;
     preloaderVideo.muted = true;
@@ -466,4 +488,5 @@ function startPlanetCover() {
     requestAnimationFrame(draw);
     requestAnimationFrame(cursorLoop);
     runPreloader();
+    armMobilePlayback();
 }

@@ -984,3 +984,22 @@
         transform: none !important;
     }
 }
+
+
+/* Touch devices: keep cards alive even when the browser blocks video autoplay. */
+@media (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+    .planet-cover .category-portal__canvas {
+        transform-origin: 50% 50%;
+        animation: portal-breathe 16s ease-in-out infinite alternate;
+    }
+}
+
+@keyframes portal-breathe {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.045);
+    }
+}
