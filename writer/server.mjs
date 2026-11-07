@@ -689,6 +689,35 @@ async function saveMedia(buffer, mimeType, originalName) {
   return record;
 }
 
+async function resolveRedirect(url) {
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new HttpError(400, "链接地址无效。");
+  }
+  if (!["http:", "https:"].includes(parsed.protocol)) {
+    throw new HttpError(400, "只允许 HTTP 或 HTTPS 链接。");
+  }
+  if (!/(^|\.)b23\.tv$/i.test(parsed.hostname)) {
+    throw new HttpError(400, "只支持 b23.tv 短链接的解析。");
+  }
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    const response = await fetch(parsed, {
+      signal: controller.signal,
+      redirect: "follow",
+      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" }
+    });
+    return { url: response.url };
+  } catch (error) {
+    throw new HttpError(422, `链接解析失败：${error.message}`);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function fetchRemoteImage(url) {
   let parsed;
   try {
@@ -845,6 +874,11 @@ async function route(req, res) {
     const originalName = decodeURIComponent(String(req.headers["x-file-name"] || "image"));
     const record = await saveMedia(buffer, mimeType, originalName);
     return sendJson(res, 200, { ...record, url: `/media/${record.file}` });
+  }
+
+  if (req.method === "POST" && pathname === "/api/resolve") {
+    const { url: target } = await readJson(req);
+    return sendJson(res, 200, await resolveRedirect(target));
   }
 
   if (req.method === "POST" && pathname === "/api/media/fetch") {

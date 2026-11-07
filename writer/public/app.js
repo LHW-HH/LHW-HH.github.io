@@ -798,7 +798,9 @@
       }
       if (/(^|\.)bilibili\.com$/i.test(parsed.hostname)) {
         const match = parsed.pathname.match(/\/video\/(BV[\w]+)/i);
-        if (match) return `<iframe src="https://player.bilibili.com/player.html?bvid=${encodeURIComponent(match[1])}&page=1" title="Bilibili 视频" allowfullscreen></iframe>`;
+        if (match) return `<iframe src="https://player.bilibili.com/player.html?bvid=${encodeURIComponent(match[1])}&page=1&autoplay=0" title="Bilibili 视频" allowfullscreen></iframe>`;
+        const avMatch = parsed.pathname.match(/\/video\/av(\d+)/i);
+        if (avMatch) return `<iframe src="https://player.bilibili.com/player.html?aid=${avMatch[1]}&page=1&autoplay=0" title="Bilibili 视频" allowfullscreen></iframe>`;
       }
       if (/\.(mp4|webm)(?:$|\?)/i.test(parsed.href)) {
         return `<video src="${parsed.href.replace(/"/g, "&quot;")}" controls preload="metadata"></video>`;
@@ -809,15 +811,29 @@
     return "";
   }
 
+  async function resolveVideoUrl(url) {
+    try {
+      const parsed = new URL(url);
+      if (/(^|\.)b23\.tv$/i.test(parsed.hostname)) {
+        const data = await api("/api/resolve", { method: "POST", body: { url } });
+        if (data && data.url) return data.url;
+      }
+    } catch (error) {
+      return url;
+    }
+    return url;
+  }
+
   async function insertVideo() {
     const url = await promptValue({
       title: "插入视频",
-      description: "支持 MP4、WebM、Bilibili 和 YouTube 链接。",
+      description: "支持 MP4、WebM、Bilibili（含 b23.tv 短链接）和 YouTube 链接。",
       label: "视频地址",
       placeholder: "https://..."
     });
     if (!url) return;
-    const embed = videoEmbed(url);
+    const resolved = await resolveVideoUrl(url);
+    const embed = videoEmbed(resolved);
     if (!embed) {
       showToast("无法识别这个视频地址。", "error");
       return;
