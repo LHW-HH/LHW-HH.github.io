@@ -41,6 +41,19 @@
   });
   turndown.use(turndownPluginGfm.gfm);
   turndown.keep(["figure", "figcaption", "video", "iframe"]);
+  turndown.addRule("text-style-span", {
+    filter(node) {
+      return node.nodeName === "SPAN"
+        && node.hasAttribute("data-text-style")
+        && Boolean(node.style.fontSize || node.style.fontFamily);
+    },
+    replacement(content, node) {
+      const styles = [];
+      if (node.style.fontSize) styles.push(`font-size:${node.style.fontSize}`);
+      if (node.style.fontFamily) styles.push(`font-family:${node.style.fontFamily.replace(/"/g, "'")}`);
+      return styles.length ? `<span style="${styles.join(";")}">${content}</span>` : content;
+    }
+  });
   turndown.addRule("plain-image", {
     filter: "img",
     replacement(_content, node) {
@@ -995,6 +1008,54 @@ main{width:min(1040px,calc(100% - 40px));margin:0 auto;padding:64px 0 100px}
     return `<table><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table><p><br></p>`;
   }
 
+  const FONT_STACKS = {
+    serif: '"Noto Serif CJK SC","Songti SC",STSong,serif',
+    sans: '"Noto Sans CJK SC","Microsoft YaHei UI",Arial,sans-serif',
+    kai: 'KaiTi,STKaiti,"Kaiti SC",serif',
+    mono: '"Cascadia Mono",Consolas,monospace'
+  };
+
+  function findStyledSpan(range) {
+    let node = range.commonAncestorContainer;
+    if (node && node.nodeType === 3) node = node.parentElement;
+    const span = node ? node.closest("span[data-text-style]") : null;
+    if (!span) return null;
+    return span.contains(range.startContainer) && span.contains(range.endContainer) ? span : null;
+  }
+
+  function applyTextStyle(property, value) {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return false;
+    const range = selection.getRangeAt(0);
+    if (range.collapsed || !editor.contains(range.commonAncestorContainer)) return false;
+
+    const existing = findStyledSpan(range);
+    if (existing && range.toString() === existing.textContent) {
+      existing.style[property] = value;
+      if (!existing.style.fontSize && !existing.style.fontFamily) {
+        const parent = existing.parentNode;
+        while (existing.firstChild) parent.insertBefore(existing.firstChild, existing);
+        existing.remove();
+      }
+      saveSelection();
+      return true;
+    }
+    if (!value) return false;
+
+    const span = document.createElement("span");
+    span.setAttribute("data-text-style", "1");
+    span.style[property] = value;
+    const fragment = range.extractContents();
+    span.append(fragment);
+    range.insertNode(span);
+    selection.removeAllRanges();
+    const restored = document.createRange();
+    restored.selectNodeContents(span);
+    selection.addRange(restored);
+    saveSelection();
+    return true;
+  }
+
   function insertTable() {
     saveSelection();
     const rowsInput = $("#table-rows");
@@ -1183,6 +1244,20 @@ main{width:min(1040px,calc(100% - 40px));margin:0 auto;padding:64px 0 100px}
       insertVideo().catch(showError);
     });
     $("#insert-table").addEventListener("click", insertTable);
+    const fontFamilySelect = $("#font-family");
+    const fontSizeSelect = $("#font-size");
+    [fontFamilySelect, fontSizeSelect].forEach((select) => {
+      select.addEventListener("mousedown", () => saveSelection());
+      select.addEventListener("change", () => {
+        restoreSelection();
+        const isSize = select === fontSizeSelect;
+        const raw = select.value;
+        const value = isSize ? raw : (FONT_STACKS[raw] || "");
+        if (applyTextStyle(isSize ? "fontSize" : "fontFamily", value)) {
+          markDirty();
+        }
+      });
+    });
     $("#save-draft").addEventListener("click", () => saveDraft().catch(showError));
     $("#preview-article").addEventListener("click", () => previewArticle().catch(showError));
     $("#publish-article").addEventListener("click", publishArticle);

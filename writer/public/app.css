@@ -1216,3 +1216,15 @@ dialog input {
 .table-dialog-grid input {
   margin-top: 7px;
 }
+
+
+.toolbar-select {
+  flex: none;
+  min-height: 32px;
+  padding: 0 6px;
+  border: 1px solid var(--control);
+  border-radius: 7px;
+  color: var(--text);
+  background: var(--raised);
+  font-size: 12px;
+}
