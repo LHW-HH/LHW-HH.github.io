@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>媒体播放检测</title>
+<style>
+  body { margin: 0; padding: 16px; background: #090807; color: #f4f6ff; font: 13px/1.7 ui-monospace, Consolas, monospace; }
+  h1 { font-size: 16px; margin: 0 0 10px; }
+  pre { white-space: pre-wrap; word-break: break-all; background: #15110f; padding: 12px; border-radius: 10px; }
+  .row { display: flex; gap: 10px; margin: 10px 0; }
+  .box { flex: 1; }
+  .box canvas { width: 100%; border-radius: 10px; background: #000; }
+  .box p { margin: 4px 0 0; color: #c3cce2; }
+</style>
+</head>
+<body>
+<h1>媒体播放检测（把这张页面截图发给 LHW）</h1>
+<pre id="env">检测中…</pre>
+<div class="row">
+  <div class="box"><canvas id="cv-visible" width="180" height="320"></canvas><p>可见视频（背景同款）</p></div>
+  <div class="box"><canvas id="cv-hidden" width="180" height="320"></canvas><p>隐藏 1px 视频（卡片同款）</p></div>
+</div>
+<pre id="dbg">检测中…</pre>
+<script>
+(function () {
+  var lines = [];
+  function log(s) { lines.push(s); document.getElementById('env').textContent = lines.join('\n'); }
+
+  log('coarse: ' + matchMedia('(pointer: coarse)').matches +
+      ' / any-coarse: ' + matchMedia('(any-pointer: coarse)').matches);
+  log('reduced-motion: ' + matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var conn = navigator.connection || navigator.mozConnection || {};
+  log('saveData: ' + (conn.saveData === undefined ? 'n/a' : conn.saveData) +
+      ' / type: ' + (conn.effectiveType || 'n/a'));
+  log('UA: ' + navigator.userAgent);
+
+  function makeVideo(src, visible) {
+    var v = document.createElement('video');
+    v.muted = true;
+    v.playsInline = true;
+    v.setAttribute('playsinline', '');
+    v.loop = true;
+    v.autoplay = true;
+    v.preload = 'metadata';
+    v.src = src;
+    if (visible) {
+      v.style.cssText = 'position:fixed;left:-4px;top:-4px;width:1px;height:1px;opacity:.01;pointer-events:none;';
+    } else {
+      v.style.cssText = 'position:fixed;left:-4px;top:-4px;width:1px;height:1px;visibility:hidden;pointer-events:none;';
+    }
+    document.body.appendChild(v);
+    var p = v.play();
+    if (p && p.catch) {
+      p.then(function () { log('play() OK: ' + src); })
+       .catch(function (e) { log('play() 被拒绝: ' + src + ' -> ' + e.name); });
+    }
+    return v;
+  }
+
+  var vVisible = makeVideo('/videos/mars-bg.mp4', true);
+  var vHidden = makeVideo('/videos/life.mp4', false);
+
+  function drawCover(canvas, video) {
+    var ctx = canvas.getContext('2d');
+    if (!video.videoWidth) return;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  }
+  var cvV = document.getElementById('cv-visible');
+  var cvH = document.getElementById('cv-hidden');
+
+  setInterval(function () {
+    function state(v) {
+      return 'paused=' + v.paused + ' t=' + v.currentTime.toFixed(1) +
+             ' rs=' + v.readyState + ' ns=' + v.networkState +
+             ' err=' + (v.error ? v.error.code : '-') +
+             ' buf=' + (v.buffered.length ? v.buffered.end(v.buffered.length - 1).toFixed(1) : 0) +
+             ' wh=' + v.videoWidth + 'x' + v.videoHeight;
+    }
+    document.getElementById('dbg').textContent =
+        '可见: ' + state(vVisible) + '\n' +
+        '隐藏: ' + state(vHidden) + '\n' +
+        'visibility: ' + document.visibilityState;
+    drawCover(cvV, vVisible);
+    drawCover(cvH, vHidden);
+  }, 500);
+})();
+</script>
+</body>
+</html>
