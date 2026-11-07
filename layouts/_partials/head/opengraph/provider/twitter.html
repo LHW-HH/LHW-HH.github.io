@@ -24,4 +24,5 @@
 {{- with $imgURL -}}
     <meta name="twitter:card" content="{{ $.Site.Params.opengraph.twitter.card }}">
     <meta name="twitter:image" content='{{ absURL . }}' />
+    <meta name="twitter:image:alt" content="{{ $.Title }}" />
 {{- end -}}

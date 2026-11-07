@@ -444,7 +444,30 @@ function startPlanetCover() {
         });
     }
 
+    function observeViewportVideos() {
+        if (!("IntersectionObserver" in window)) return;
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                const video = entry.target;
+                if (entry.isIntersecting) {
+                    if (!reducedMotion.matches && !document.hidden) {
+                        video.play().catch(() => {});
+                    }
+                } else {
+                    video.pause();
+                }
+            });
+        }, { threshold: 0.01 });
+        observer.observe(backgroundVideo);
+        portals.forEach((portal) => {
+            if (portal.media instanceof HTMLVideoElement) {
+                observer.observe(portal.media);
+            }
+        });
+    }
+
     setupPortals();
+    observeViewportVideos();
     backgroundVideo.muted = true;
     preloaderVideo.muted = true;
     if (!reducedMotion.matches) {

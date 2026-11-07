@@ -1,0 +1,16 @@
+{{- $pageTitle := .Title -}}
+{{- $siteTitle := .Site.Title -}}
+
+{{- if eq .Kind "404" -}}{{ return printf "页面不存在 | %s" $siteTitle }}{{- end -}}
+
+{{- $title := $siteTitle -}}
+{{- if and $pageTitle (ne $pageTitle $siteTitle) -}}
+    {{- $title = printf "%s | %s" $pageTitle $siteTitle -}}
+{{- end -}}
+
+{{- $paginator := partial "helper/paginator.html" . -}}
+{{- if and $paginator $paginator.HasPrev -}}
+    {{- $title = printf "%s - Page %d" $title $paginator.PageNumber -}}
+{{- end -}}
+
+{{ return $title }}

@@ -1,0 +1,13 @@
+{{ define "body-class" }}archive-404{{ end }}
+
+{{ define "main" }}
+<section class="not-found">
+    <p class="not-found__code">404</p>
+    <h1 class="not-found__title">这条轨道不存在</h1>
+    <p class="not-found__text">你要找的页面可能被移动或删除了。回到首页，沿着档案重新找一条轨道。</p>
+    <div class="not-found__actions">
+        <a class="not-found__button" href="{{ "/" | relURL }}">返回首页</a>
+        <a class="not-found__link" href="{{ "/archives/" | relURL }}">查看全部文章</a>
+    </div>
+</section>
+{{ end }}
