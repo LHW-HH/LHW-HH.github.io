@@ -422,12 +422,28 @@ function startPlanetCover() {
         requestAnimationFrame(cursorLoop);
     }
 
+    let autoplayBlocked = false;
+
     function attemptPlayback() {
         if (reducedMotion.matches) return;
-        backgroundVideo.play().catch(() => {});
+        const tryPlay = (video) => {
+            video.muted = true;
+            video.playsInline = true;
+            const result = video.play();
+            if (result && result.catch) {
+                result.then(() => {
+                    autoplayBlocked = false;
+                }).catch((error) => {
+                    if (error && error.name === "NotAllowedError") {
+                        autoplayBlocked = true;
+                    }
+                });
+            }
+        };
+        tryPlay(backgroundVideo);
         portals.forEach((portal) => {
             if (portal.media instanceof HTMLVideoElement) {
-                portal.media.play().catch(() => {});
+                tryPlay(portal.media);
             }
         });
     }
@@ -446,22 +462,36 @@ function startPlanetCover() {
         window.setTimeout(() => hint.classList.add("is-visible"), 50);
     }
 
+    function removeMotionHint() {
+        document.querySelectorAll(".motion-hint").forEach((hint) => hint.remove());
+        motionHintShown = false;
+    }
+
     function armMobilePlayback() {
-        if (!coarsePointer.matches || reducedMotion.matches) return;
-        const types = ["touchstart", "touchend", "click", "keydown"];
+        if (reducedMotion.matches) return;
+        const types = ["touchstart", "touchend", "click"];
         const unlock = () => {
-            types.forEach((type) => window.removeEventListener(type, unlock));
-            document.querySelectorAll(".motion-hint").forEach((hint) => hint.remove());
             attemptPlayback();
+            window.setTimeout(() => {
+                if (autoplayBlocked) {
+                    showMotionHint();
+                } else {
+                    types.forEach((type) => window.removeEventListener(type, unlock));
+                    removeMotionHint();
+                }
+            }, 350);
         };
         types.forEach((type) => {
-            window.addEventListener(type, unlock, { once: true, passive: true });
+            window.addEventListener(type, unlock, { passive: true });
         });
+        attemptPlayback();
         window.setTimeout(() => {
-            if (backgroundVideo.paused) {
+            const stalled = backgroundVideo.paused ||
+                (backgroundVideo.readyState >= 2 && backgroundVideo.currentTime === 0);
+            if (autoplayBlocked || stalled) {
                 showMotionHint();
             }
-        }, 2500);
+        }, 2000);
     }
 
     function observeViewportVideos() {

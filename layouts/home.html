@@ -54,7 +54,7 @@
 <div class="archive-world">
     <section id="top" class="planet-cover experience" data-planet="mars" aria-label="Planet Jumping">
         <div class="backgrounds" aria-hidden="true">
-            <video id="mars-background" class="background is-visible" muted playsinline autoplay loop preload="auto"
+            <video id="mars-background" class="background is-visible" muted playsinline autoplay loop webkit-playsinline x5-playsinline preload="auto"
                 poster="{{ "images/mars-poster.jpg" | relURL }}"
                 src="{{ "videos/mars-bg.mp4" | relURL }}"></video>
         </div>
@@ -101,7 +101,7 @@
                         {{ if eq .media_type "image" }}
                             {{ with .media }}<img class="category-portal__media" src="{{ . }}" alt="" loading="lazy">{{ end }}
                         {{ else if .media }}
-                            <video class="category-portal__media" src="{{ .media }}" muted playsinline autoplay loop preload="metadata"
+                            <video class="category-portal__media" src="{{ .media }}" muted playsinline autoplay loop webkit-playsinline x5-playsinline preload="metadata"
                                 {{ with .poster }}poster="{{ . }}"{{ end }}></video>
                             {{ with .poster }}<img class="category-portal__poster" src="{{ . }}" alt="" loading="eager">{{ end }}
                         {{ end }}

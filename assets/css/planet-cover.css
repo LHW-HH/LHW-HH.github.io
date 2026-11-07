@@ -990,7 +990,7 @@
 @media (pointer: coarse) and (prefers-reduced-motion: no-preference) {
     .planet-cover .category-portal__canvas {
         transform-origin: 50% 50%;
-        animation: portal-breathe 16s ease-in-out infinite alternate;
+        animation: portal-breathe 9s ease-in-out infinite alternate;
     }
 }
 
@@ -1000,7 +1000,7 @@
     }
 
     to {
-        transform: scale(1.045);
+        transform: scale(1.07);
     }
 }
 
@@ -1009,7 +1009,7 @@
 @media (pointer: coarse) and (prefers-reduced-motion: no-preference) {
     .planet-cover .background {
         transform-origin: 50% 45%;
-        animation: background-breathe 22s ease-in-out infinite alternate;
+        animation: background-breathe 14s ease-in-out infinite alternate;
     }
 }
 
@@ -1019,7 +1019,7 @@
     }
 
     to {
-        transform: scale(1.035);
+        transform: scale(1.06);
     }
 }
 
@@ -1046,4 +1046,15 @@
     opacity: 1;
     pointer-events: auto;
     transform: translate(-50%, 0);
+    animation: motion-hint-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes motion-hint-pulse {
+    0%, 100% {
+        transform: translate(-50%, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(-50%, 0) scale(1.06);
+    }
 }
