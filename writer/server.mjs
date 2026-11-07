@@ -591,27 +591,54 @@ async function validateHugo() {
   }
 }
 
+async function systemProxy() {
+  if (process.platform !== "win32") return null;
+  try {
+    const result = await run("reg", [
+      "query",
+      "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
+    ], { timeout: 10000 });
+    if (result.code !== 0) return null;
+    if (!/ProxyEnable\s+REG_DWORD\s+0x1/i.test(result.stdout)) return null;
+    const match = result.stdout.match(/ProxyServer\s+REG_SZ\s+(\S+)/i);
+    if (!match) return null;
+    const value = match[1].trim();
+    return value.includes("=") ? null : value;
+  } catch {
+    return null;
+  }
+}
+
 async function git(args, timeout = 120000) {
-  return run("git", ["-C", ROOT, ...args], { timeout });
+  return run("git", ["-c", `safe.directory=${ROOT}`, "-C", ROOT, ...args], { timeout });
 }
 
 async function publishGit(article) {
   const add = await git(["add", "--", `content/post/${article.slug}`]);
   if (add.code !== 0) throw new Error(add.stderr || "Git add 失败");
   const status = await git(["status", "--porcelain", "--", `content/post/${article.slug}`]);
-  if (!status.stdout.trim()) {
+  if (status.stdout.trim()) {
+    const commit = await git([
+      "commit",
+      "-m",
+      `发布文章：${article.title}`,
+      "--",
+      `content/post/${article.slug}`
+    ]);
+    if (commit.code !== 0) throw new Error(commit.stderr || commit.stdout || "Git commit 失败");
+  }
+
+  const ahead = await git(["rev-list", "--count", "origin/main..main"]);
+  const pending = Number((ahead.stdout || "0").trim()) || 0;
+  if (!status.stdout.trim() && pending === 0) {
     return { pushed: false, message: "内容没有变化，无需再次发布。", runId: null };
   }
-  const commit = await git([
-    "commit",
-    "-m",
-    `发布文章：${article.title}`,
-    "--",
-    `content/post/${article.slug}`
-  ]);
-  if (commit.code !== 0) throw new Error(commit.stderr || commit.stdout || "Git commit 失败");
 
-  let push = await git(["push", "origin", "main"]);
+  const proxy = await systemProxy();
+  const pushArgs = proxy
+    ? ["-c", `http.proxy=http://${proxy}`, "-c", `https.proxy=http://${proxy}`, "push", "origin", "main"]
+    : ["push", "origin", "main"];
+  let push = await git(pushArgs);
   if (push.code !== 0) {
     push = await git([
       "push",
