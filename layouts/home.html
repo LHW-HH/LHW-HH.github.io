@@ -5,7 +5,6 @@
     {{ $coverCSS := resources.Get "css/planet-cover.css" | minify | fingerprint }}
     <link rel="stylesheet" href="{{ $homeCSS.RelPermalink }}" integrity="{{ $homeCSS.Data.Integrity }}">
     <link rel="stylesheet" href="{{ $coverCSS.RelPermalink }}" integrity="{{ $coverCSS.Data.Integrity }}">
-    <link rel="preconnect" href="https://d2ol7oe51mr4n9.cloudfront.net" crossorigin>
 
     {{ $coverScript := resources.Get "js/planet-cover.js" | minify | fingerprint }}
     <script>
@@ -56,12 +55,12 @@
     <section id="top" class="planet-cover experience" data-planet="mars" aria-label="Planet Jumping">
         <div class="backgrounds" aria-hidden="true">
             <video id="mars-background" class="background is-visible" muted playsinline preload="auto"
-                src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/3c83091e-4046-4fd6-adbb-2edb728be79a.mp4"></video>
+                src="{{ "videos/mars-bg.mp4" | relURL }}"></video>
         </div>
 
         <div class="preloader" id="preloader" aria-label="Loading Mars">
             <video id="preloader-video" muted playsinline preload="auto"
-                src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/5fc5651c-3b5d-4171-b507-87f7e635d1b4.mp4"></video>
+                src="{{ "videos/projects.mp4" | relURL }}"></video>
             <div class="preloader-shade"></div>
         </div>
 

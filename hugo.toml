@@ -1,6 +1,6 @@
 # 站点基本配置
 baseURL = 'https://lhw-hh.github.io/'
-languageCode = 'zh-cn'
+locale = 'zh-cn'
 defaultContentLanguage = 'zh-cn'
 title = 'LHW 的个人博客'
 theme = 'Stack'
@@ -11,6 +11,8 @@ pagerSize = 10
 [params]
 mainSections = ['post']
 description = '记录与总结'
+favicon = 'img/favicon.png'
+ogImage = 'img/og-home.png'
 
 [params.author]
 name = 'LHW'
