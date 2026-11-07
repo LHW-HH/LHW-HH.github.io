@@ -1,8 +1,8 @@
 ---
 title: "信息科大与我（即个人对大学生活的感受)"
 date: 2026-11-05T05:00:32.802Z
-lastmod: 2026-11-07T17:50:10.467Z
-draft: false
+lastmod: 2026-11-07T17:53:37.414Z
+draft: true
 categories:
   - "生活随笔"
 ---
