@@ -1,0 +1,43 @@
+{{- with .Site.Params.comments.giscus -}}
+{{- /* The whole site is dark-only, so giscus always renders the dark theme. */ -}}
+<script
+    src="https://giscus.app/client.js"
+    data-repo="{{- .repo -}}"
+    data-repo-id="{{- .repoID -}}"
+    data-category="{{- .category -}}"
+    data-category-id="{{- .categoryID -}}"
+    data-mapping="{{- .mapping -}}"
+    data-strict="{{- .strict -}}"
+    data-reactions-enabled="{{- .reactionsEnabled -}}"
+    data-emit-metadata="{{- .emitMetadata -}}"
+    data-input-position="{{- .inputPosition -}}"
+    data-theme="{{- .darkTheme -}}"
+    data-lang="{{- .lang -}}"
+    data-loading="{{- .loading -}}"
+    crossorigin="anonymous"
+    async
+></script>
+<script>
+    (function () {
+        function setGiscusTheme() {
+            const giscus = document.querySelector("iframe.giscus-frame");
+            if (!giscus) return;
+            giscus.contentWindow.postMessage(
+                {
+                    giscus: {
+                        setConfig: {
+                            theme: "{{- .darkTheme -}}",
+                        },
+                    },
+                },
+                "https://giscus.app"
+            );
+        }
+
+        addEventListener("message", (event) => {
+            if (event.origin !== "https://giscus.app") return;
+            setGiscusTheme();
+        });
+    })();
+</script>
+{{- end -}}
