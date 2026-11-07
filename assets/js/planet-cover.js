@@ -432,16 +432,36 @@ function startPlanetCover() {
         });
     }
 
+    let motionHintShown = false;
+
+    function showMotionHint() {
+        if (motionHintShown) return;
+        motionHintShown = true;
+        const hint = document.createElement("button");
+        hint.type = "button";
+        hint.className = "motion-hint";
+        hint.textContent = "轻触页面，开启动效";
+        hint.addEventListener("click", () => attemptPlayback());
+        experience.appendChild(hint);
+        window.setTimeout(() => hint.classList.add("is-visible"), 50);
+    }
+
     function armMobilePlayback() {
         if (!coarsePointer.matches || reducedMotion.matches) return;
         const types = ["touchstart", "touchend", "click", "keydown"];
         const unlock = () => {
             types.forEach((type) => window.removeEventListener(type, unlock));
+            document.querySelectorAll(".motion-hint").forEach((hint) => hint.remove());
             attemptPlayback();
         };
         types.forEach((type) => {
             window.addEventListener(type, unlock, { once: true, passive: true });
         });
+        window.setTimeout(() => {
+            if (backgroundVideo.paused) {
+                showMotionHint();
+            }
+        }, 2500);
     }
 
     function observeViewportVideos() {

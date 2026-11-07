@@ -1003,3 +1003,47 @@
         transform: scale(1.045);
     }
 }
+
+
+/* Touch devices: keep the hero background alive too when autoplay is blocked. */
+@media (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+    .planet-cover .background {
+        transform-origin: 50% 45%;
+        animation: background-breathe 22s ease-in-out infinite alternate;
+    }
+}
+
+@keyframes background-breathe {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.035);
+    }
+}
+
+.motion-hint {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    z-index: 60;
+    transform: translate(-50%, 8px);
+    padding: 10px 20px;
+    border: 0;
+    border-radius: 999px;
+    color: #090807;
+    background: rgba(244, 246, 255, 0.92);
+    font: 700 13px/1 "SF Pro", "Noto Sans CJK SC", "Microsoft YaHei UI", Arial, sans-serif;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.motion-hint.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+}
