@@ -1023,6 +1023,26 @@ main{width:min(1040px,calc(100% - 40px));margin:0 auto;padding:64px 0 100px}
     return span.contains(range.startContainer) && span.contains(range.endContainer) ? span : null;
   }
 
+  function explodeStyledSpan(span) {
+    const blockSelector = "p,h2,h3,h4,li,td,th,figcaption";
+    const blocks = [...span.querySelectorAll(blockSelector)].filter((block) => !block.querySelector(blockSelector));
+    if (!blocks.length) return null;
+    const styleText = span.getAttribute("style") || "";
+    for (const block of blocks) {
+      const inner = document.createElement("span");
+      inner.setAttribute("data-text-style", "1");
+      inner.style.cssText = styleText;
+      while (block.firstChild) inner.append(block.firstChild);
+      block.append(inner);
+    }
+    const parent = span.parentNode;
+    const first = span.firstElementChild;
+    const last = span.lastElementChild;
+    while (span.firstChild) parent.insertBefore(span.firstChild, span);
+    span.remove();
+    return { first, last };
+  }
+
   function applyTextStyle(property, value) {
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) return false;
@@ -1048,9 +1068,15 @@ main{width:min(1040px,calc(100% - 40px));margin:0 auto;padding:64px 0 100px}
     const fragment = range.extractContents();
     span.append(fragment);
     range.insertNode(span);
+    const exploded = explodeStyledSpan(span);
     selection.removeAllRanges();
     const restored = document.createRange();
-    restored.selectNodeContents(span);
+    if (exploded && exploded.first && exploded.last) {
+      restored.setStartBefore(exploded.first);
+      restored.setEndAfter(exploded.last);
+    } else {
+      restored.selectNodeContents(span);
+    }
     selection.addRange(restored);
     saveSelection();
     return true;
