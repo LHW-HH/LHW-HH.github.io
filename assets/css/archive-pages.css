@@ -604,7 +604,7 @@ body:not(.home-world) html::before {
     max-width: 72ch;
     color: var(--archive-ink);
     font-family: "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", STSong, serif;
-    font-size: clamp(1.05rem, 1.3vw, 1.18rem);
+    font-size: 16px;
     line-height: 1.92;
 }
 
