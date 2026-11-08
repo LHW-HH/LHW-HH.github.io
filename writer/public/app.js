@@ -44,7 +44,6 @@
   turndown.addRule("text-style-span", {
     filter(node) {
       return node.nodeName === "SPAN"
-        && node.hasAttribute("data-text-style")
         && Boolean(node.style.fontSize || node.style.fontFamily);
     },
     replacement(content, node) {
@@ -54,6 +53,28 @@
       return styles.length ? `<span style="${styles.join(";")}">${content}</span>` : content;
     }
   });
+  turndown.addRule("gfm-table-robust", {
+    filter(node) {
+      return node.nodeName === "TABLE";
+    },
+    replacement(content, node) {
+      const rows = [...node.querySelectorAll("tr")];
+      if (!rows.length) return content;
+      const cellText = (cell) => (cell.textContent || "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .replace(/\|/g, "\\|");
+      const lines = rows.map((row) => {
+        const cells = [...row.children].map(cellText);
+        return "| " + cells.join(" | ") + " |";
+      });
+      const columns = rows[0].children.length;
+      const separator = "| " + Array.from({ length: columns }, () => "---").join(" | ") + " |";
+      lines.splice(1, 0, separator);
+      return "\n\n" + lines.join("\n") + "\n\n";
+    }
+  });
+
   turndown.addRule("plain-image", {
     filter: "img",
     replacement(_content, node) {
