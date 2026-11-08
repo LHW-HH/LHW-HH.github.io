@@ -994,9 +994,16 @@ async function route(req, res) {
   }
 
   if (req.method === "GET" && pathname.startsWith("/published-assets/")) {
-    const [, , slug, ...parts] = pathname.split("/");
-    const { dir } = await articleFile(slug);
-    return serveFile(res, assertInside(dir, join(dir, parts.join("/"))));
+    const [, , rawSlug, ...rawParts] = pathname.split("/");
+    const decode = (value) => {
+      try {
+        return decodeURIComponent(value);
+      } catch {
+        return value;
+      }
+    };
+    const { dir } = await articleFile(decode(rawSlug));
+    return serveFile(res, assertInside(dir, join(dir, ...rawParts.map(decode))));
   }
 
   if (req.method === "GET" && pathname === "/") {
