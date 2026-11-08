@@ -1218,7 +1218,48 @@ main{width:min(1040px,calc(100% - 40px));margin:0 auto;padding:64px 0 100px}
       }
     });
 
+    function exitBlockquote(quote) {
+      const paragraph = document.createElement("p");
+      paragraph.innerHTML = "<br>";
+      const isEmpty = !quote.textContent.trim() && !quote.querySelector("img,video,iframe,table");
+      if (isEmpty) {
+        quote.replaceWith(paragraph);
+      } else {
+        quote.after(paragraph);
+      }
+      placeCaretAtEnd(paragraph);
+      return paragraph;
+    }
+
     editor.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        const caret = getCaretElement();
+        const quote = caret ? caret.closest("blockquote") : null;
+        if (quote) {
+          event.preventDefault();
+          exitBlockquote(quote);
+          markDirty();
+          return;
+        }
+      }
+      if (event.key === "Enter" && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
+        const caret = getCaretElement();
+        const quote = caret ? caret.closest("blockquote") : null;
+        if (quote) {
+          const line = caret.closest("p, div");
+          const emptyLine = line && line !== quote
+            ? !line.textContent.trim() && !line.querySelector("img,video,iframe,table")
+            : false;
+          const emptyQuote = !quote.textContent.trim() && !quote.querySelector("img,video,iframe,table");
+          if (emptyLine || (emptyQuote && !line)) {
+            event.preventDefault();
+            if (line && line !== quote) line.remove();
+            exitBlockquote(quote);
+            markDirty();
+            return;
+          }
+        }
+      }
       if (event.key === "Tab" && !event.ctrlKey && !event.metaKey) {
         const caret = getCaretElement();
         const cell = caret ? caret.closest("td, th") : null;
