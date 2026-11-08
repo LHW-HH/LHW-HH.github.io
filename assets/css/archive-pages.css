@@ -690,6 +690,10 @@ body:not(.home-world) html::before {
     color: var(--archive-muted);
 }
 
+.archive-prose p {
+    text-indent: 2em;
+}
+
 .archive-prose pre {
     overflow: auto;
     padding: 20px;

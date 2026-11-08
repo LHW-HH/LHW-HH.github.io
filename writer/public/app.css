@@ -429,6 +429,7 @@ button:active {
 
 .article-editor p {
   margin: 0 0 1.1em;
+  text-indent: 2em;
 }
 
 .article-editor a {
