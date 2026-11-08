@@ -1,0 +1,12 @@
+{{- /* Keep meta descriptions short: the full text can be thousands of
+       characters, which breaks embed widgets that read the description. */ -}}
+{{- $description := .Site.Params.sidebar.subtitle -}}
+{{- if .Site.Params.description -}}
+    {{- $description = .Site.Params.description -}}
+{{- end -}}
+{{- if .Description -}}
+    {{- $description = .Description -}}
+{{- else if .IsPage -}}
+    {{- $description = .Summary -}}
+{{- end -}}
+{{- return (replaceRE "\n" " " $description | plainify | truncate 120) -}}
